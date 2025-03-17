@@ -12,7 +12,6 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 
-
 interface SignupFormProps extends React.ComponentPropsWithoutRef<'div'> {
     onSignupSubmit: (data: SignupData) => void
 }

@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/sheet"
 import { DialogProps } from "@radix-ui/react-dialog";
 import { Button } from "../ui/button";
+import Image from "next/image";
 
 interface CartProduct {
     name: string,
@@ -36,7 +37,7 @@ export function CartSheet({ ...rest }: DialogProps) {
                         {cartProducts.map((product, i) => (
                             <React.Fragment key={i}>
                                 <div className="flex items-center gap-2">
-                                    <img className="aspect-square w-12 invert" src="/next.svg" />
+                                    <Image className="aspect-square w-12 invert" src="/next.svg" alt="Next.js Logo" width={48} height={48} />
                                     <p>{product.name}</p>
                                 </div>
                                 <div className="flex items-center">

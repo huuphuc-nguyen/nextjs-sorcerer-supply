@@ -37,7 +37,7 @@ export default function Home() {
     // Get products from Firestore
     getProducts()
       .then(products => setProducts(products))
-      .catch(_ => { setError(true) })
+      .catch(error => { setError(true); console.error(error) })
       .finally(() => { setLoading(false) });
 
     // Clean up auth callback
