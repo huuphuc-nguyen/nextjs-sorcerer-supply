@@ -1,8 +1,19 @@
 'use client';
 
+<<<<<<< HEAD
 import { LoginForm } from '@/components/LoginForm/login-form'
 import { auth } from '@/app/firebase/config'
 import { signInWithEmailAndPassword } from 'firebase/auth';
+=======
+import Image from 'next/image';
+import { useRouter } from "next/navigation";
+import { WandSparkles } from 'lucide-react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/lib/firebase/config'
+import { useToast } from "@/hooks/use-toast"
+import { LoginData } from '@/types/authentication';
+import { LoginForm } from '@/components/LoginForm/login-form'
+>>>>>>> dev
 import background from '../../assets/background/login.png';
 import Image from 'next/image';
 import { WandSparkles } from 'lucide-react';

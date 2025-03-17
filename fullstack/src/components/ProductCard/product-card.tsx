@@ -2,14 +2,18 @@ import {
     Card,
     CardContent,
     CardFooter,
-    CardHeader,
 } from "@/components/ui/card"
 
 
 interface ProductCardProps {
     key?: string,
+<<<<<<< HEAD
     name: string,
     price: number,
+=======
+    name?: string,
+    price?: number,
+>>>>>>> dev
     imageSrc?: string
 }
 
