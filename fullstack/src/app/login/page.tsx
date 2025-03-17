@@ -1,10 +1,5 @@
 'use client';
 
-<<<<<<< HEAD
-import { LoginForm } from '@/components/LoginForm/login-form'
-import { auth } from '@/app/firebase/config'
-import { signInWithEmailAndPassword } from 'firebase/auth';
-=======
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
 import { WandSparkles } from 'lucide-react';
@@ -13,13 +8,7 @@ import { auth } from '@/lib/firebase/config'
 import { useToast } from "@/hooks/use-toast"
 import { LoginData } from '@/types/authentication';
 import { LoginForm } from '@/components/LoginForm/login-form'
->>>>>>> dev
 import background from '../../assets/background/login.png';
-import Image from 'next/image';
-import { WandSparkles } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast"
-import { useRouter } from "next/navigation";
-import { LoginData } from '@/types/authType';
 
 export default function Login() {
   // Toaster
@@ -67,7 +56,7 @@ export default function Login() {
       <div className='fixed w-full h-full backdrop-blur-md -z-10'></div>
       
       {/* Header */}
-      <h1 className='text-3xl font-semibold text-center text-white'> <WandSparkles className='inline mx-2'/>Sorcerer's Supply</h1>
+      <h1 className='text-3xl font-semibold text-center text-white'> <WandSparkles className='inline mx-2'/>Sorcerer&apos;s Supply</h1>
 
       {/* Login form */}
       <LoginForm onLoginSubmit={handleLoginSubmit}/>

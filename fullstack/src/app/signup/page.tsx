@@ -54,7 +54,7 @@ export default function Signup() {
       <div className='fixed w-full h-full backdrop-blur-md -z-10'></div>
       
       {/* Header */}
-      <h1 className='text-3xl font-semibold text-center text-white'> <WandSparkles className='inline mx-2'/>Sorcerer's Supply</h1>
+      <h1 className='text-3xl font-semibold text-center text-white'> <WandSparkles className='inline mx-2'/>Sorcerer&apos;s Supply</h1>
 
       <SignupForm onSignupSubmit={handleSignupSubmit} className='dark' />
     </div>

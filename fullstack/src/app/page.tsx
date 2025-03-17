@@ -17,40 +17,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-<<<<<<< HEAD
-import { auth } from '@/app/firebase/config';
-import { getAuth, signOut } from "firebase/auth";
-import { getProductDocuments } from '@/app/firebase/products';
-
-import { ProductDocumentData } from "@/types/product-document-data";
-
-import { DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
-
-import { useEffect, useState } from "react";
-
-import { useToast } from '@/hooks/use-toast';
-
-import { useRouter } from 'next/navigation';
-
-=======
->>>>>>> dev
 export default function Home() {
 
   const { toast } = useToast();
   const router = useRouter();
 
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
-<<<<<<< HEAD
-  const [loadingProducts, setLoadingProducts] = useState(false);
-  const [productDocuments, setProductDocuments] = useState<QueryDocumentSnapshot<DocumentData, DocumentData>[]>([]);
-  const { toast } = useToast();
-  const router = useRouter(); 
-=======
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [products, setProducts] = useState<Product[]>();
   const [cartOpen, setCartOpen] = useState(false);
->>>>>>> dev
 
   useEffect(() => {
     // Get Firebase authentication
@@ -59,37 +35,15 @@ export default function Home() {
     });
 
     // Get products from Firestore
-<<<<<<< HEAD
-    setLoadingProducts(true);
-
-    getProductDocuments()
-      .then(docs => {
-        setProductDocuments(docs);
-        setLoadingProducts(false);
-      });
-=======
     getProducts()
       .then(products => setProducts(products))
-      .catch(_ => { setError(true) })
+      .catch(error => { setError(true); console.error(error) })
       .finally(() => { setLoading(false) });
->>>>>>> dev
 
     // Clean up auth callback
     return () => { unsubscribe() }
   }, []);
 
-<<<<<<< HEAD
-  const handleClick = async () => {
-    const auth = getAuth();
-
-    if (!authenticated) {
-      router.push('/login');
-      return;
-    }
-    else {
-      try {
-        await signOut(auth);
-=======
   const handleAuthClicked = async () => {
     const auth = getAuth();
 
@@ -105,24 +59,17 @@ export default function Home() {
       try {
         await signOut(auth);
 
->>>>>>> dev
         toast({
           title: "Signed out",
           variant: "success",
           description: "You have been signed out.",
         });
-<<<<<<< HEAD
-        router.push('/');
-      } catch (error) {
-        console.error(error);
-=======
 
         router.push('/');
       }
       catch (error) {
         console.error(error);
 
->>>>>>> dev
         toast({
           title: "Sign out failed",
           variant: "destructive",
@@ -132,11 +79,6 @@ export default function Home() {
     }
   };
 
-<<<<<<< HEAD
-  return (
-    <div>
-      <SiteHeader authenticated={authenticated} onAuthClicked={handleClick} />
-=======
   const handleCartClicked = () => {
     setCartOpen(true);
   };
@@ -144,7 +86,6 @@ export default function Home() {
   return (
     <div>
       <SiteHeader authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} />
->>>>>>> dev
       <div className="px-4 py-1 border-b border-gray-800 flex justify-end">
         <DropdownMenu >
           <DropdownMenuTrigger>Sort by</DropdownMenuTrigger>
@@ -167,24 +108,8 @@ export default function Home() {
             ))}
           </div>}
       </div>
-<<<<<<< HEAD
-      <div className="p-[2rem] grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-10 place-items-center">
-        {loadingProducts ? <LoadingSpinner/> : productDocuments.map((doc) => {
-          const data = doc.data() as QueryDocumentSnapshot<ProductDocumentData>;
-          return (
-            <ProductCard
-            key={doc.id}
-            name={doc.data().name}
-            price={ doc.data().price }
-            imageSrc={ doc.data().imageSrc }
-            />
-          );
-        })}
-      </div>
-=======
 
       <CartSheet onOpenChange={setCartOpen} open={cartOpen} />
->>>>>>> dev
     </div>
   );
 }
