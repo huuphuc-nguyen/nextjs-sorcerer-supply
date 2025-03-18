@@ -27,7 +27,7 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
 
       - name: Build Docker Image
-        run: docker build -t $REGISTRY/$IMAGE_NAME:latest .
+        run: docker build -t $REGISTRY/$IMAGE_NAME:latest fullstack
 
       - name: Push Docker Image to GHCR
         run: docker push $REGISTRY/$IMAGE_NAME:latest
