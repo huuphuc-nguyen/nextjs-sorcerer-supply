@@ -34,8 +34,16 @@ export default function Login() {
   
       // Store token in cookies
       document.cookie = `token=${token}; path=/;`;
-  
-      router.push('/');
+
+      const redirectPath = sessionStorage.getItem("redirectAfterLogin") 
+      sessionStorage.removeItem("redirectAfterLogin")
+
+      if (redirectPath){
+        router.push(redirectPath)
+      }
+      else{
+        router.push('/');
+      }
 
     } catch (error) {
       console.error(error);
