@@ -114,21 +114,19 @@ export default function Home() {
       </div>
       <Carousel className='w-3/4 justify-center px-4'>
         <CarouselContent>
-          {brands.map((value, index) => (
-            <CarouselItem className='basis-1/5' key={index}>
               {
               productDocuments.map((doc) => {
               const data = doc.data() as ProductDocumentData;
               return (
-                <ProductCard
-                  key={doc.id}
-                  name={data.name}
-                  price={'$' + (data.cents / 100)}
-                />
+                <CarouselItem className='basis-1/5' key={doc.id}>
+                  <ProductCard
+                    key={doc.id}
+                    name={data.name}
+                    price={'$' + (data.cents / 100)}
+                  />
+                </CarouselItem>
               );
             })}
-            </CarouselItem>
-          ))}
         </CarouselContent>
         <CarouselNext />
         <CarouselPrevious />
