@@ -63,7 +63,10 @@ export default function Home() {
     "Beginner",
     "More Categories"
   ];
-
+  const brands = [
+    "Brand Placeholder 1",
+    "Brand Placeholder 2"
+  ]
   return (
     <div>
       <SiteHeader authenticated={authenticated} />
@@ -91,7 +94,7 @@ export default function Home() {
       <div className="px-4 py-2">
         <h1>Collections</h1>
       </div>
-      <Carousel className='w-md px-4'>
+      <Carousel className='w-3/4 justify-center px-4'>
         <CarouselContent>
           {categories.map((value, index) => (
             <CarouselItem className='basis-1/5' key={index}>
@@ -100,6 +103,30 @@ export default function Home() {
                   <p>{value}</p>
                 </CardContent>
               </Card>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselNext />
+        <CarouselPrevious />
+      </Carousel>
+      <div className="px-4 py-2">
+        <h1>Featured</h1>
+      </div>
+      <Carousel className='w-3/4 justify-center px-4'>
+        <CarouselContent>
+          {brands.map((value, index) => (
+            <CarouselItem className='basis-1/5' key={index}>
+              {
+              productDocuments.map((doc) => {
+              const data = doc.data() as ProductDocumentData;
+              return (
+                <ProductCard
+                  key={doc.id}
+                  name={data.name}
+                  price={'$' + (data.cents / 100)}
+                />
+              );
+            })}
             </CarouselItem>
           ))}
         </CarouselContent>
