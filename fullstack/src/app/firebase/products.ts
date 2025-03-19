@@ -10,7 +10,7 @@ async function getProductDocuments(): Promise<QueryDocumentSnapshot<DocumentData
 
         for (const collectionName of collectionNames) {
             const collectionRef = collection(db, collectionName);
-            const limitedDocs = query(collectionRef,limit(3));
+            const limitedDocs = query(collectionRef);
             const querySnapshot = await getDocs(limitedDocs);
             allDocs = [...allDocs, ...querySnapshot.docs]; 
         }
