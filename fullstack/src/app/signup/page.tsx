@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast"
 import { SignupData } from '@/types/authentication';
 import { SignupForm } from '@/components/SignupForm/signup-form'
 import background from '../../assets/background/login.png';
+import { createUserInDatabase } from '@/lib/firebase/users';
 
 export default function Signup() {
 
@@ -21,6 +22,7 @@ export default function Signup() {
           const { email, password } = data;
       
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          createUserInDatabase();
       
           toast({
             title: "Login successful",

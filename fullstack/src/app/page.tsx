@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'nextjs-toploader/app';
 import { getAuth, signOut } from "firebase/auth";
 import { auth } from '@/lib/firebase/config';
 import { getProducts, Product } from '@/lib/firebase/products';
@@ -83,9 +83,13 @@ export default function Home() {
     setCartOpen(true);
   };
 
+  const handleAccountClicked = () => {
+    router.push('/account'); 
+  }
+
   return (
     <div>
-      <SiteHeader authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} />
+      <SiteHeader authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
       <div className="px-4 py-1 border-b border-gray-800 flex justify-end">
         <DropdownMenu >
           <DropdownMenuTrigger>Sort by</DropdownMenuTrigger>

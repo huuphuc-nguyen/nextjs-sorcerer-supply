@@ -5,6 +5,19 @@ on:
     branches:
       - dev
 
+env:
+  # Use GitHub Container Registry (GHCR)
+  REGISTRY: ghcr.io
+  # Image name using <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
+  # Firebase Secrets
+  NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+  NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+  NEXT_PUBLIC_FIREBASE_MSG_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MSG_SENDER_ID }}
+  NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -43,7 +56,15 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
 
       - name: Build Docker Image
-        run: docker build -t $REGISTRY/$IMAGE_NAME:latest fullstack
+        run: |
+          docker build \
+            --build-arg NEXT_PUBLIC_FIREBASE_API_KEY=$NEXT_PUBLIC_FIREBASE_API_KEY \
+            --build-arg NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=$NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN \
+            --build-arg NEXT_PUBLIC_FIREBASE_PROJECT_ID=$NEXT_PUBLIC_FIREBASE_PROJECT_ID \
+            --build-arg NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=$NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET \
+            --build-arg NEXT_PUBLIC_FIREBASE_MSG_SENDER_ID=$NEXT_PUBLIC_FIREBASE_MSG_SENDER_ID \
+            --build-arg NEXT_PUBLIC_FIREBASE_APP_ID=$NEXT_PUBLIC_FIREBASE_APP_ID \
+            -t $REGISTRY/$IMAGE_NAME:latest fullstack/
 
       - name: Push Docker Image to GHCR
         run: docker build \
