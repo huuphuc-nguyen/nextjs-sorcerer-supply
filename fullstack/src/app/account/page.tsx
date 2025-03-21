@@ -42,6 +42,19 @@ const Account = () => {
                     console.error("Error getting user data:", error);
                 }
                 );
+                getUserFromDatabase(user.uid).then((userData) => {
+                    if (userData) {
+                        sessionStorage.setItem("userId", user.uid);
+                        sessionStorage.setItem("userEmail", userData.email);
+                        sessionStorage.setItem("userPayment", userData.payment);
+                        sessionStorage.setItem("userAddress", userData.address);
+                        sessionStorage.setItem("userFullname", userData.fullname);
+                    }
+                }
+                ).catch((error) => {
+                    console.error("Error getting user data:", error);
+                }
+                );
             }
         });
 
@@ -97,6 +110,17 @@ const Account = () => {
                                 />
                                 <Pencil className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer" size={16} />
                         </label>
+
+                        <label className="relative w-full text-white">
+                            <input
+                                type="text" 
+                                className="text-md border rounded-md p-4 flex flex-row items-center bg-inherit w-full
+                                     focus:border-yellow-600 focus:border focus:outline-none transition-all duration-300"
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
+                                />
+                                <Pencil className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer" size={16} />
+                        </label>
                         
                         <div className="text-md">
                             <strong>Email:</strong>
@@ -109,10 +133,28 @@ const Account = () => {
                                 disabled
                                 />
                         </label>
+                        <label className="relative w-full text-white">
+                            <input
+                                type="text" 
+                                className="text-md border rounded-md p-4 flex flex-row items-center bg-inherit w-full"
+                                value={email}
+                                disabled
+                                />
+                        </label>
 
                         <div className="text-md">
                             <strong>Address:</strong>
                         </div>
+                        <label className="relative w-full text-white">
+                            <input
+                                type="text" 
+                                className="text-md border rounded-md p-4 flex flex-row items-center bg-inherit w-full
+                                     focus:border-yellow-600 focus:border focus:outline-none transition-all duration-300"
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                                />
+                                <Pencil className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer" size={16} />
+                        </label>
                         <label className="relative w-full text-white">
                             <input
                                 type="text" 
