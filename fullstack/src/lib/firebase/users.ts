@@ -36,7 +36,6 @@ async function createUserInDatabase() {
 
 async function getUserFromDatabase(userId: string): Promise<User | null> {
     const docRef = doc(db, "users", userId);
-    console.log("User ID:", userId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
         return docSnap.data() as User;
