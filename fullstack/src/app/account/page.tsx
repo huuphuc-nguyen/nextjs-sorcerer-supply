@@ -5,7 +5,7 @@ import { useRouter } from 'nextjs-toploader/app';
 import { auth } from '@/lib/firebase/config';
 import { LoadingSpinner } from '@/components/ui/spinner';
 import { Pencil } from "lucide-react";
-import { getUserFromDatabase, updateUserInDatabase, User } from "@/lib/firebase/users";
+import { getUserFromDatabase, updateUserInDatabase} from "@/lib/firebase/users";
 import { toast } from "@/hooks/use-toast";
 
 const Account = () => {
@@ -18,7 +18,6 @@ const Account = () => {
   const [email, setEmail] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
   const [payment, setPayment] = useState<string>("");
-  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") { // Ensure sessionStorage access happens only client-side
@@ -43,7 +42,6 @@ const Account = () => {
     if (uid) {
         setUserId(uid);
         getUserFromDatabase(uid).then((user) => {
-            setUser(user);
             setFullName(user?.fullname || "");
             setEmail(user?.email || "");
             setAddress(user?.address || "");
