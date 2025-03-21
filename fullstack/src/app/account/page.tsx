@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEventHandler, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from 'nextjs-toploader/app';
 
 import { auth } from '@/lib/firebase/config'
@@ -48,7 +48,7 @@ const Account = () => {
       }, [router]);
 
 
-    const handleSaveClicked : FormEventHandler<HTMLFormElement> = async (e) => {
+    const handleSaveClicked = async (e : React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         setIsSaving(true);
         if (userId) {
