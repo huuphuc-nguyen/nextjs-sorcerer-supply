@@ -2,16 +2,9 @@
 import { LoadingSpinner } from '@/components/ui/spinner';
 import { SiteHeader } from "@/components/SiteHeader/site-header";
 import { ProductCardFull } from "@/components/ProductCard/product-card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { auth } from '@/app/firebase/config';
+import { auth } from '@/lib/firebase/config';
 import { getAuth, signOut } from "firebase/auth";
-import { getProductDocument  } from '@/app/firebase/getProduct';
-import { ProductDocumentData } from "@/types/product-document-data";
+import { getProductDocument  } from '@/lib/firebase/getProduct';
 import { DocumentSnapshot, DocumentData } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useToast } from '@/hooks/use-toast';

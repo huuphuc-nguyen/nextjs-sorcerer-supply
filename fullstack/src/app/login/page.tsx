@@ -1,46 +1,59 @@
 'use client';
 
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
 import { WandSparkles } from 'lucide-react';
-
-import { LoginForm } from '@/components/LoginForm/login-form'
-
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/lib/firebase/config'
 import { useToast } from "@/hooks/use-toast"
-
-import { auth } from '@/app/firebase/config'
-
-import { LoginData } from '@/types/login';
-
+import { LoginData } from '@/types/authentication';
+import { LoginForm } from '@/components/LoginForm/login-form'
 import background from '../../assets/background/login.png';
 
 export default function Login() {
+  // Toaster
   const { toast } = useToast();
+
+  // Use to Navigate after successful login
   const router = useRouter();
 
-  const handleLoginSubmit = (data: LoginData) => {
-    const email = data.email;
-    const password = data.password;
+  const handleLoginSubmit = async (data: LoginData) => {
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        toast({
-          title: "Login successful",
-          variant: "success",
-          description: "Welcome back!",
-        })
-
-        router.push('/');
-      })
-      .catch(error => {
-        //console.error(error.message);
-        toast({
-          title: "Login failed",
-          variant: "destructive",
-          description: "Please check your email and password and try again.",
-        })
+    try {
+      const { email, password } = data;
+  
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+  
+      toast({
+        title: "Login successful",
+        variant: "success",
+        description: "Welcome back!",
       });
+  
+      const token = await userCredential.user.getIdToken();
+  
+      // Store token in cookies
+      document.cookie = `token=${token}; path=/;`;
+
+      const redirectPath = sessionStorage.getItem("redirectAfterLogin") 
+      sessionStorage.removeItem("redirectAfterLogin")
+
+      if (redirectPath){
+        router.push(redirectPath)
+      }
+      else{
+        router.push('/');
+      }
+
+    } catch (error) {
+      console.error(error);
+  
+      toast({
+        title: "Login failed",
+        variant: "destructive",
+        description: "Please check your email and password and try again.",
+      });
+    }
   };
 
   return (
@@ -51,7 +64,7 @@ export default function Login() {
       <div className='fixed w-full h-full backdrop-blur-md -z-10'></div>
       
       {/* Header */}
-      <h1 className='text-3xl font-semibold text-center text-white'> <WandSparkles className='inline mx-2'/>Sorcerer's Supply</h1>
+      <h1 className='text-3xl font-semibold text-center text-white'> <WandSparkles className='inline mx-2'/>Sorcerer&apos;s Supply</h1>
 
       {/* Login form */}
       <LoginForm onLoginSubmit={handleLoginSubmit}/>
