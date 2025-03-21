@@ -112,25 +112,27 @@ export default function Home() {
       <div className="px-4 py-2">
         <h1>Featured</h1>
       </div>
-      <Carousel className='w-3/4 justify-center px-4'>
-        <CarouselContent>
-              {
+      <div className='flex justify-center w-full px-[20%]'>
+        <Carousel className='w-full'>
+          <CarouselContent>
+            {
               productDocuments.map((doc) => {
-              const data = doc.data() as ProductDocumentData;
-              return (
-                <CarouselItem className='basis-1/5' key={doc.id}>
-                  <ProductCard
-                    key={doc.id}
-                    name={data.name}
-                    price={'$' + (data.cents / 100)}
-                  />
-                </CarouselItem>
-              );
-            })}
-        </CarouselContent>
-        <CarouselNext />
-        <CarouselPrevious />
-      </Carousel>
+                const data = doc.data() as ProductDocumentData;
+                return (
+                  <CarouselItem className='basis-1/4' key={doc.id}>
+                    <ProductCard
+                      key={doc.id}
+                      name={data.name}
+                      price={'$' + (data.cents / 100)}
+                    />
+                  </CarouselItem>
+                );
+              })}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+      </div>
       <div className="px-4 py-2">
         <h1>All Products</h1>
       </div>
