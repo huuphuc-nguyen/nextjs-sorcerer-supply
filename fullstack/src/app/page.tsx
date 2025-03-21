@@ -87,13 +87,15 @@ export default function Home() {
     router.push('/account'); 
   }
 
+  console.log("Products:", products);
+
   return (
     <div>
       <SiteHeader authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
       <div className="px-4 py-1 border-b border-gray-800 flex justify-end">
-        <DropdownMenu >
+        <DropdownMenu>
           <DropdownMenuTrigger>Sort by</DropdownMenuTrigger>
-          <DropdownMenuContent className='dark'>
+          <DropdownMenuContent className="dark">
             <DropdownMenuItem>Price: Low to High</DropdownMenuItem>
             <DropdownMenuItem>Price: High to Low</DropdownMenuItem>
           </DropdownMenuContent>
@@ -103,17 +105,40 @@ export default function Home() {
       <div className='m-4'>
         <p>Products</p>
 
-        {loading && <LoadingSpinner />}
+        {/* {loading && <LoadingSpinner />} */}
         {error && <p>There was an error loading the products</p>}
-        {!loading && !error && products &&
+        {/* {!loading && !error && products &&
           <div className='my-2 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-10 place-items-center'>
             {products.map(product => (
               <ProductCard key={product.id} name={product.name} price={product.price} imageSrc={product.imageSrc} />
             ))}
-          </div>}
+          </div>} */}
       </div>
 
       <CartSheet onOpenChange={setCartOpen} open={cartOpen} />
+      <div className="p-[2rem] grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-10 place-items-center">
+        {loading && products ? (
+          <LoadingSpinner />
+        ) : (
+          products?.map((product) => {
+            return (
+              <div
+                key={product.id}
+                onClick={() =>
+                  router.push(`/productPage/${product.collectionName}/${product.id}`)
+                }
+                style={{ cursor: "pointer" }}
+              >
+                <ProductCard
+                  name={product.name}
+                  price={product.price}
+                  imageSrc={product.imageSrc}
+                />
+              </div>
+            );
+          })
+        )}
+      </div>
     </div>
-  );
+  );  
 }

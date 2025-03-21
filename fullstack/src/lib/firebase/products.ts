@@ -8,6 +8,7 @@ interface Product {
     imageSrc: string,
     name: string,
     price: number
+    collectionName: string
 };
 
 async function getProducts(): Promise<Product[]> {
@@ -16,7 +17,8 @@ async function getProducts(): Promise<Product[]> {
         id: doc.id,
         imageSrc: doc.data().imageSrc,
         name: doc.data().name,
-        price: doc.data().price
+        price: doc.data().price,
+        collectionName: doc.data().collectionName
     }));
 }
 
