@@ -8,9 +8,8 @@ import { getProductDocument  } from '@/lib/firebase/getProduct';
 import { DocumentSnapshot, DocumentData } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'nextjs-toploader/app';
 import { useParams } from 'next/navigation';
-
 
 export default function ProductPage() {
     const [loadingProducts, setLoadingProducts] = useState(false);

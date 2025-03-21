@@ -1,5 +1,5 @@
 import { db } from '@/lib/firebase/config'
-import { setDoc, doc } from 'firebase/firestore'
+import { setDoc, doc, getDoc } from 'firebase/firestore'
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const auth = getAuth();
@@ -34,6 +34,23 @@ async function createUserInDatabase() {
       });
 }
 
-export { createUserInDatabase };
+async function getUserFromDatabase(userId: string): Promise<User | null> {
+    const docRef = doc(db, "users", userId);
+    console.log("User ID:", userId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+        return docSnap.data() as User;
+    } else {
+        console.log("No such user!");
+        return null;
+    }
+}
+
+async function updateUserInDatabase(userId: string, userData: Partial<User>) {
+    const docRef = doc(db, "users", userId);
+    return setDoc(docRef, userData, { merge: true })
+}
+
+export { createUserInDatabase, getUserFromDatabase, updateUserInDatabase};
 
 export type { User };
