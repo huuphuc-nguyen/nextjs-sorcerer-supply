@@ -10,9 +10,11 @@ import { useEffect, useState } from "react";
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'nextjs-toploader/app';
 import { useParams } from 'next/navigation';
+import { CartSheet } from '@/components/CartSheet/cart-sheet';
 
 export default function ProductPage() {
     const [loadingProducts, setLoadingProducts] = useState(false);
+    const [cartOpen, setCartOpen] = useState(false);
     const [productDocument, setProductDocument] = useState<DocumentSnapshot<DocumentData> | null>(null);
     const [authenticated, setAuthenticated] = useState<boolean | null>(null);
     const router = useRouter();
@@ -46,7 +48,7 @@ export default function ProductPage() {
         };
       }, [id,collectionName]);
   
-    const handleClick = async () => {
+    const handleAuthClicked = async () => {
       const authInstance = getAuth();
       if (!authenticated) {
         router.push('/login');
@@ -69,11 +71,18 @@ export default function ProductPage() {
         });
       }
     };
+    const handleCartClicked = () => {
+      setCartOpen(true);
+    };
+  
+    const handleAccountClicked = () => {
+      router.push('/account'); 
+    }
 
     return (
       <div>
         {/* Place the header at the top */}
-        <SiteHeader authenticated={authenticated} onAuthClicked={handleClick} />
+        <SiteHeader authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
         {/* Rest of your product page content */}
         <div className="px-4 py-2">
           <p>Product Page</p>
@@ -111,6 +120,7 @@ export default function ProductPage() {
             <LoadingSpinner />
           )}
         </div>
+        <CartSheet onOpenChange={setCartOpen} open={cartOpen} />
       </div>
     );
   }
