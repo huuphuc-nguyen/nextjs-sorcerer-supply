@@ -87,8 +87,6 @@ export default function Home() {
     router.push('/account'); 
   }
 
-  console.log("Products:", products);
-
   return (
     <div>
       <SiteHeader authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
