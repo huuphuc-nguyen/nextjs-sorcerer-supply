@@ -94,25 +94,27 @@ export default function Home() {
       <div className="px-4 py-2">
         <h1>Collections</h1>
       </div>
-      <Carousel className='w-3/4 justify-center px-4'>
-        <CarouselContent>
-          {categories.map((value, index) => (
-            <CarouselItem className='basis-1/5' key={index}>
-              <Card className='h-36 flex'>
-                <CardContent>
-                  <p>{value}</p>
-                </CardContent>
-              </Card>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselNext />
-        <CarouselPrevious />
-      </Carousel>
+      <div className='flex justify-center w-full px-[10%]'>
+        <Carousel className='w-full'>
+          <CarouselContent>
+            {categories.map((value, index) => (
+              <CarouselItem className='basis-1/5' key={index}>
+                <Card className='h-36 flex'>
+                  <CardContent>
+                    <p>{value}</p>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselNext />
+          <CarouselPrevious />
+        </Carousel>
+      </div>
       <div className="px-4 py-2">
         <h1>Featured</h1>
       </div>
-      <div className='flex justify-center w-full px-[20%]'>
+      <div className='flex justify-center w-full px-[10%]'>
         <Carousel className='w-full'>
           <CarouselContent>
             {
