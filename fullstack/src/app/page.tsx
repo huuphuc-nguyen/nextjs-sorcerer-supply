@@ -17,6 +17,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+import { Card, CardContent } from "@/components/ui/card"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import Image from "next/image";
+
 export default function Home() {
 
   const { toast } = useToast();
@@ -43,6 +47,20 @@ export default function Home() {
     // Clean up auth callback
     return () => { unsubscribe() }
   }, []);
+
+  const images = [
+    '/depositphotos_227387246-stock-photo-photo-of-three-witches-with.jpg',
+    '/gettyimages-175543914-612x612.jpg',
+    '/gettyimages-1186887201-612x612.jpg'
+  ];
+  const categories = [
+    "Beginner",
+    "More Categories"
+  ];
+  // const brands = [
+  //   "Brand Placeholder 1",
+  //   "Brand Placeholder 2"
+  // ]
 
   const handleAuthClicked = async () => {
     const auth = getAuth();
@@ -90,6 +108,83 @@ export default function Home() {
   return (
     <div>
       <SiteHeader authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
+      
+      {/* Code From Chris */}
+
+      <div className='flex justify-center'>
+        <Carousel className='w-full max-w-xl' id="hero-carousel" opts={{
+          loop: true
+        }}>
+          <CarouselContent>
+            {images.map((value, index) => (
+              <CarouselItem key={index}>
+                <div className="p-1">
+                  <Card>
+                    <CardContent className="flex items-center justify-center">
+                      <Image
+                          src={value}
+                          alt="Image"
+                          height={300}
+                          width={300}/>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+      </div>
+
+      <div className="px-4 py-2">
+        <h1>Collections</h1>
+      </div>
+
+      <div className='flex justify-center w-full px-[10%]'>
+        <Carousel className='w-full'>
+          <CarouselContent>
+            {categories.map((value, index) => (
+              <CarouselItem className='basis-1/5' key={index}>
+                <Card className='h-36 flex'>
+                  <CardContent>
+                    <p>{value}</p>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselNext />
+          <CarouselPrevious />
+        </Carousel>
+      </div>
+      <div className="px-4 py-2">
+        <h1>Featured</h1>
+      </div>
+
+      <div className='flex justify-center w-full px-[10%]'>
+        <Carousel className='w-full'>
+          <CarouselContent>
+            {
+              products?.map((product) => {
+                return (
+                  <CarouselItem className='basis-1/4' key={product.id}>
+                    <ProductCard
+                      key={product.id}
+                      name={product.name}
+                      price={(product.price / 100)}
+                    />
+                  </CarouselItem>
+                );
+              })}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+      </div>
+
+      {/* Code From DEV */}
+
       <div className="px-4 py-1 border-b border-gray-800 flex justify-end">
         <DropdownMenu>
           <DropdownMenuTrigger>Sort by</DropdownMenuTrigger>
