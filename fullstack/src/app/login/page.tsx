@@ -57,7 +57,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-5 h-screen overflow-hidden w-full">
+    <div className="flex flex-col items-center justify-center gap-5 h-screen overflow-y-auto w-full">
       
       {/* Background image */}
       <Image src={background} alt='background' fill={true} className='fixed -z-20 inset-0'/>
