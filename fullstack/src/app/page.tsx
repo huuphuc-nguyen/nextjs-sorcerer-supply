@@ -31,8 +31,10 @@ export default function Home() {
     handleAuthClicked,
     handleCartClicked,
     handleAccountClicked,
+    handleSearchClicked,
     authenticated,
     cartOpen,
+    setSearchText,
     setCartOpen,} = useHeader();
   
   useEffect(() => {
@@ -55,7 +57,7 @@ export default function Home() {
   
   return (
     <div>
-      <SiteHeader authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
+      <SiteHeader authenticated={authenticated} setSearchText={setSearchText} onSearchClicked={handleSearchClicked} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
       
       {/* Code From Chris */}
 

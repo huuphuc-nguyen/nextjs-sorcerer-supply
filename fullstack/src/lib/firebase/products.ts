@@ -1,5 +1,5 @@
 import { db } from '@/lib/firebase/config'
-import { collection, DocumentData, getDocs, QueryDocumentSnapshot, query, limit } from 'firebase/firestore'
+import { collection, DocumentData, getDocs, QueryDocumentSnapshot, query, limit, where } from 'firebase/firestore'
 
 const collectionNames = ["wands", "spellBooks", "staffs", "scrolls", "magicItems", "ingredients", "cursedItems", "creatures"];
 
@@ -10,6 +10,35 @@ interface Product {
     price: number
     collectionName: string
 };
+
+async function searchProducts(searchTerm: string): Promise<Product[]> {
+    const searchResults: Product[] = [];
+
+    try {
+        for (const col of collectionNames) {
+            const colRef = collection(db, col);
+            const q = query(colRef);
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+                if (doc.data().name.toUpperCase().includes(searchTerm.toUpperCase())) {
+                    searchResults.push({
+                        id: doc.id,
+                        imageSrc: doc.data().imageSrc,
+                        name: doc.data().name,
+                        price: doc.data().price,
+                        collectionName: doc.data().collectionName
+                    });
+                }
+            });
+        }
+
+        return searchResults;
+    }
+    catch (err) {
+        console.error("Error searching for documents:", err);
+        return [];
+    }
+}
 
 async function getProducts(): Promise<Product[]> {
     const docs = await getProductDocuments();
@@ -40,6 +69,6 @@ async function getProductDocuments(): Promise<QueryDocumentSnapshot<DocumentData
     }
 }
 
-export { getProductDocuments, getProducts };
+export { getProductDocuments, getProducts, searchProducts };
 
 export type { Product };
