@@ -23,6 +23,15 @@ const categories = [
 const CategoriesDropdownMenu = () => {
 
     const router = useRouter();
+    // Utility function to convert category to camelCase
+    const formatCategory = (category: string) => {
+      const words = category.split(" ");
+      if (words.length === 2) {
+        return words[0].toLowerCase() + words[1];
+      }
+      return words[0].toLowerCase();
+    };
+
 
   return (
     <div className="hidden md:flex mx-4">
@@ -34,7 +43,11 @@ const CategoriesDropdownMenu = () => {
               <ul className="flex flex-col gap-2 m-1 mx-2 text-nowrap">
                 {categories.map((category, index) => (
                   <li
-                    onClick={() => {router.push(`/category/${category.toLowerCase().trim()}`)}} 
+                  onClick={() => {
+                    const formattedCategory = formatCategory(category);
+                    router.push(`/category/${formattedCategory}`);
+                  }}
+                    style={{ cursor: "pointer" }}
                     key={index}
                     className="rounded-lg p-8 py-4 transition duration-300 hover:bg-black hover:text-white cursor-pointer"
                   >

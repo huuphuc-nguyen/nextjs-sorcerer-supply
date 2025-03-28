@@ -11,6 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'nextjs-toploader/app';
 import { useParams } from 'next/navigation';
 import { CartSheet } from '@/components/CartSheet/cart-sheet';
+import { useSearchParams } from "next/navigation";
+
 
 export default function ProductPage() {
     const [loadingProducts, setLoadingProducts] = useState(false);
@@ -19,6 +21,7 @@ export default function ProductPage() {
     const [authenticated, setAuthenticated] = useState<boolean | null>(null);
     const router = useRouter();
     const { toast } = useToast();
+    const [searchText, setSearchText] = useState("");
     const { collectionName, id } = useParams();
   
     useEffect(() => {
@@ -82,7 +85,7 @@ export default function ProductPage() {
     return (
       <div>
         {/* Place the header at the top */}
-        <SiteHeader authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
+        <SiteHeader  setSearchText={setSearchText} authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
         {/* Rest of your product page content */}
         <div className="px-4 py-2">
           <p>Product Page</p>

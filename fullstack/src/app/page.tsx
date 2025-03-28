@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from 'nextjs-toploader/app';
 import { getProducts, Product } from '@/lib/firebase/products';
+import { getAllProductDocuments } from "@/lib/firebase/allProducts";
 import { LoadingSpinner } from '@/components/ui/spinner';
 import { SiteHeader } from "@/components/SiteHeader/site-header";
 import { ProductCard } from "@/components/ProductCard/product-card";
@@ -18,11 +19,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Image from "next/image";
 import { useHeader } from "@/hooks/use-header";
+import { get } from "http";
+import { QueryDocumentSnapshot } from "firebase/firestore";
 
 export default function Home() {
 
   const router = useRouter();
-
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [products, setProducts] = useState<Product[]>();
@@ -37,13 +40,39 @@ export default function Home() {
     setSearchText,
     setCartOpen,} = useHeader();
   
-  useEffect(() => {
-    // Get products from Firestore
-    getProducts()
-      .then(products => setProducts(products))
-      .catch(error => { setError(true); console.error(error) })
-      .finally(() => { setLoading(false) });
-  }, []);
+    useEffect(() => {
+      getProducts()
+        .then((products) => setFeaturedProducts(products))
+        .catch((error) => {
+          setError(true);
+          console.error(error);
+        })
+        .finally(() => setLoading(false));
+    }, []);
+  
+    // Fetch all products for CartSheet and product grid
+    useEffect(() => {
+      getAllProductDocuments()
+        .then((docs) => {
+          // Map QueryDocumentSnapshot to Product[]
+          const allProductsData = docs.map((doc) => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              name: data.name,
+              price: data.price,
+              imageSrc: data.imageSrc,
+              collectionName: data.collectionName, // If needed for routing
+            } as Product;
+          });
+          setProducts(allProductsData);
+        })
+        .catch((error) => {
+          setError(true);
+          console.error(error);
+        });
+    }, []);
+  
 
   const images = [
     '/depositphotos_227387246-stock-photo-photo-of-three-witches-with.jpg',
@@ -116,9 +145,13 @@ export default function Home() {
         <Carousel className='w-full'>
           <CarouselContent>
             {
-              products?.map((product) => {
+              featuredProducts?.map((product) => {
                 return (
-                  <CarouselItem className='basis-1/5' key={product.id}>
+                  <CarouselItem className='basis-1/5' key={product.id}
+                  onClick={() =>
+                    router.push(`/productPage/${product.collectionName}/${product.id}`)
+                  }
+                  style={{ cursor: "pointer" }}>
                     <ProductCard
                       key={product.id}
                       name={product.name}
@@ -164,19 +197,19 @@ export default function Home() {
         {loading && products ? (
           <LoadingSpinner />
         ) : (
-          products?.map((product) => {
+          products?.map((Product) => {
             return (
               <div
-                key={product.id}
+                key={Product.id}
                 onClick={() =>
-                  router.push(`/productPage/${product.collectionName}/${product.id}`)
+                  router.push(`/productPage/${Product.collectionName}/${Product.id}`)
                 }
                 style={{ cursor: "pointer" }}
               >
                 <ProductCard
-                  name={product.name}
-                  price={product.price}
-                  imageSrc={product.imageSrc}
+                  name={Product.name}
+                  price={Product.price}
+                  imageSrc={Product.imageSrc}
                 />
               </div>
             );
