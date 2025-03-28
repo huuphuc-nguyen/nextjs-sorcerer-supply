@@ -11,6 +11,7 @@ const CategoryLayout = ({ children }: { children: React.ReactNode }) => {
     handleAuthClicked,
     handleCartClicked,
     handleAccountClicked,
+    setSearchText,
     authenticated,
     cartOpen,
     setCartOpen,} = useHeader();
@@ -18,7 +19,7 @@ const CategoryLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-        <SiteHeader authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
+        <SiteHeader setSearchText={setSearchText} authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
 
       {/* Main Content */}
       <main className="flex-grow p-8">{children}</main>
