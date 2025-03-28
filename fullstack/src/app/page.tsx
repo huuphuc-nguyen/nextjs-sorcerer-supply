@@ -72,8 +72,8 @@ export default function Home() {
                       <Image
                           src={value}
                           alt="Image"
-                          height={300}
-                          width={300}/>
+                          height={500}
+                          width={500}/>
                     </CardContent>
                   </Card>
                 </div>
@@ -116,11 +116,11 @@ export default function Home() {
             {
               products?.map((product) => {
                 return (
-                  <CarouselItem className='basis-1/4' key={product.id}>
+                  <CarouselItem className='basis-1/5' key={product.id}>
                     <ProductCard
                       key={product.id}
                       name={product.name}
-                      price={(product.price / 100)}
+                      price={product.price}
                     />
                   </CarouselItem>
                 );
