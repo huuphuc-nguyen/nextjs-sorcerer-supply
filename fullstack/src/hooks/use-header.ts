@@ -3,6 +3,14 @@ import { getAuth, signOut } from "firebase/auth";
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'nextjs-toploader/app';
 import { useEffect, useState } from "react";
+import { CartItem } from '@/app/productPage/[collectionName]/[id]/page';
+
+interface CartProduct {
+  name: string,
+  image: string,
+  price: number,
+  quantity: number
+}
 
 export const useHeader = () => {
 
@@ -11,6 +19,7 @@ export const useHeader = () => {
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchText, setSearchText] = useState<string>('');
+  const [cartProducts, setCartProducts] = useState<CartProduct[]>([]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
@@ -56,6 +65,22 @@ export const useHeader = () => {
   };
 
   const handleCartClicked = () => {
+    const currentCart = localStorage.getItem("cartItems");
+    const cartItems = currentCart ? JSON.parse(decodeURIComponent(currentCart)) : [];
+    
+    const products: CartProduct[] = cartItems.map((item: CartItem) => {
+      const product = item.productData;
+      const quantity = item.quantity;
+      
+      return {
+        name: product?.name,
+        price: product?.price,
+        quantity: quantity,
+        image: product?.imageSrc,
+      };
+    });
+    
+    setCartProducts(products); 
     setCartOpen(true);
   };
 
@@ -73,5 +98,6 @@ export const useHeader = () => {
     searchText,
     setSearchText,
     setCartOpen,
+    cartProducts,
   }
 };

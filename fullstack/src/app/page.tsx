@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from 'nextjs-toploader/app';
 import { getProducts, Product } from '@/lib/firebase/products';
 import { getAllProductDocuments } from "@/lib/firebase/allProducts";
@@ -8,19 +8,10 @@ import { LoadingSpinner } from '@/components/ui/spinner';
 import { SiteHeader } from "@/components/SiteHeader/site-header";
 import { ProductCard } from "@/components/ProductCard/product-card";
 import { CartSheet } from '@/components/CartSheet/cart-sheet';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
 import { Card, CardContent } from "@/components/ui/card"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import Image from "next/image";
+//import Image from "next/image";
 import { useHeader } from "@/hooks/use-header";
-import { get } from "http";
-import { QueryDocumentSnapshot } from "firebase/firestore";
 
 export default function Home() {
 
@@ -38,7 +29,8 @@ export default function Home() {
     authenticated,
     cartOpen,
     setSearchText,
-    setCartOpen, } = useHeader();
+    setCartOpen,
+    cartProducts} = useHeader();
 
   useEffect(() => {
     getProducts()
@@ -86,14 +78,13 @@ export default function Home() {
 
   return (
     <div>
-      <SiteHeader authenticated={authenticated} setSearchText={setSearchText} onSearchClicked={handleSearchClicked} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked} />
-
+      <SiteHeader authenticated={authenticated} setSearchText={setSearchText} onSearchClicked={handleSearchClicked} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
       <div className='flex justify-center py-4'>
         <Carousel className='w-full max-w-xl' id="hero-carousel" opts={{ loop: true }}>
           <CarouselContent>
             {images.map((value, index) => (
               <CarouselItem className="flex content-center" key={index}>
-                <img src={value} alt={"fuck me man"} />
+                <img src={value} alt={"fuck me man - ok"} />
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -119,7 +110,7 @@ export default function Home() {
           <CarouselNext />
           <CarouselPrevious />
         </Carousel>
-
+        
         <p>Featured</p>
         {loading &&
           <div className="flex justify-center">
@@ -155,7 +146,7 @@ export default function Home() {
         {error && <p>There was an error loading the products</p>}
       </div>
 
-      <CartSheet onOpenChange={setCartOpen} open={cartOpen} />
+      <CartSheet onOpenChange={setCartOpen} open={cartOpen} cartProducts={cartProducts}/>
     </div>
   );
 }

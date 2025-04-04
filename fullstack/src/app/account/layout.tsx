@@ -13,18 +13,20 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
     handleAccountClicked,
     authenticated,
     cartOpen,
-    setCartOpen,} = useHeader();
+    setCartOpen,
+    setSearchText,
+    cartProducts} = useHeader();
 
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-        <SiteHeader authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
+        <SiteHeader setSearchText={setSearchText} authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
 
       {/* Main Content */}
       <main className="flex-grow p-8">{children}</main>
 
       {/* Cart Sheet*/}
-      <CartSheet onOpenChange={setCartOpen} open={cartOpen} />
+      <CartSheet cartProducts={cartProducts} onOpenChange={setCartOpen} open={cartOpen} />
     </div>
   );
 };
