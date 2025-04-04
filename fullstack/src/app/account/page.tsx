@@ -97,7 +97,7 @@ const Account = () => {
     <main className="flex min-h-screen flex-col items-center justify-start gap-10 p-16">
       <h1 className="text-2xl font-semibold">Account</h1>
       {/* Profile Section */}
-      <form className="border border-dashed rounded-xl px-16 py-6 w-1/2 grid place-items-center">
+      <form className=" bg-slate-400/10 shadow-lg backdrop-blur-md rounded-xl px-16 py-6 w-1/2 grid place-items-center">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full items-center">
           <div className="text-md flex items-center">
             <strong>Full Name:</strong>

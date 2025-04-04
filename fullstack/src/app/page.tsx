@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from 'nextjs-toploader/app';
 import { getProducts, Product } from '@/lib/firebase/products';
 import { getAllProductDocuments } from "@/lib/firebase/allProducts";
@@ -14,13 +14,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
 import { Card, CardContent } from "@/components/ui/card"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Image from "next/image";
 import { useHeader } from "@/hooks/use-header";
-import { get } from "http";
-import { QueryDocumentSnapshot } from "firebase/firestore";
 
 export default function Home() {
 
@@ -38,9 +35,11 @@ export default function Home() {
     authenticated,
     cartOpen,
     setSearchText,
-    setCartOpen,} = useHeader();
+    setCartOpen,
+    cartProducts} = useHeader();
   
     useEffect(() => {
+
       getProducts()
         .then((products) => setFeaturedProducts(products))
         .catch((error) => {
@@ -87,8 +86,6 @@ export default function Home() {
   return (
     <div>
       <SiteHeader authenticated={authenticated} setSearchText={setSearchText} onSearchClicked={handleSearchClicked} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
-      
-      {/* Code From Chris */}
 
       <div className='flex justify-center'>
         <Carousel className='w-full max-w-xl' id="hero-carousel" opts={{
@@ -167,8 +164,6 @@ export default function Home() {
         </Carousel>
       </div>
 
-      {/* Code From DEV */}
-
       <div className="px-4 py-1 border-b border-gray-800 flex justify-end">
         <DropdownMenu>
           <DropdownMenuTrigger>Sort by</DropdownMenuTrigger>
@@ -192,7 +187,7 @@ export default function Home() {
           </div>} */}
       </div>
 
-      <CartSheet onOpenChange={setCartOpen} open={cartOpen} />
+      <CartSheet onOpenChange={setCartOpen} open={cartOpen} cartProducts={cartProducts}/>
       <div className="p-[2rem] grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-10 place-items-center">
         {loading && products ? (
           <LoadingSpinner />
