@@ -19,12 +19,8 @@ interface CartProduct {
     quantity: number
   }
 
-  interface CartSheetProps extends DialogProps {
-    cartProducts: CartProduct[]; // Accept cartProducts as a prop
-  }
-
-export function CartSheet({ cartProducts, ...rest }: CartSheetProps){
-    const [cart, setCart] = useState<CartProduct[]>(cartProducts);
+export function CartSheet({ ...rest }: DialogProps){
+    const [cart, setCart] = useState<CartProduct[]>([]);
 
     useEffect(() => {
         if (!rest.open) return;

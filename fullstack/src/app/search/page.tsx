@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useHeader } from "@/hooks/use-header";
 import { SiteHeader } from "@/components/SiteHeader/site-header";
 import { ProductCard } from "@/components/ProductCard/product-card";
@@ -15,25 +15,25 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination"
-import { getProducts, Product, searchProducts } from "../../lib/firebase/products";
-import { useRouter } from "next/router";
+import { Product, searchProducts } from "../../lib/firebase/products";
+//import { useRouter } from "next/router";
 import { useSearchParams } from "next/navigation";
 
-export default function Search() {
-
+const SearcComponent = () => {
     const [products, setProducts] = useState<Product[] | undefined>(undefined);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
     const {
         handleAuthClicked,
+        handleDashboardClicked,
         handleCartClicked,
         handleAccountClicked,
         handleSearchClicked,
         authenticated,
         cartOpen,
         setSearchText,
-        setCartOpen
+        setCartOpen,
     } = useHeader();
 
     const searchParams = useSearchParams();
@@ -54,7 +54,7 @@ export default function Search() {
 
     return (
         <div>
-            <SiteHeader setSearchText={setSearchText} onCartClicked={handleCartClicked} onSearchClicked={handleSearchClicked} />
+            <SiteHeader setSearchText={setSearchText} onCartClicked={handleCartClicked} onSearchClicked={handleSearchClicked} onDashboardClicked={handleDashboardClicked}/>
             <div className="m-4">
                 {loading && <LoadingSpinner />}
                 {error && <div>An error occured</div>}
@@ -91,7 +91,15 @@ export default function Search() {
                     </div>
                 }
             </div>
-            <CartSheet open={cartOpen} onOpenChange={setCartOpen} />
+        <CartSheet onOpenChange={setCartOpen} open={cartOpen} />
         </div>
+    );
+}
+
+export default function Search() {
+    return (
+   <Suspense fallback={<LoadingSpinner />}>
+        <SearcComponent />
+    </Suspense>
     );
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from 'nextjs-toploader/app';
 import { getProducts, Product } from '@/lib/firebase/products';
-import { getAllProductDocuments } from "@/lib/firebase/allProducts";
+//import { getAllProductDocuments } from "@/lib/firebase/allProducts";
 import { LoadingSpinner } from '@/components/ui/spinner';
 import { SiteHeader } from "@/components/SiteHeader/site-header";
 import { ProductCard } from "@/components/ProductCard/product-card";
@@ -19,7 +19,7 @@ export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [products, setProducts] = useState<Product[]>();
+  //const [products, setProducts] = useState<Product[]>();
 
   const {
     handleAuthClicked,
@@ -43,27 +43,27 @@ export default function Home() {
   }, []);
 
   // Fetch all products for CartSheet and product grid
-  useEffect(() => {
-    getAllProductDocuments()
-      .then((docs) => {
-        // Map QueryDocumentSnapshot to Product[]
-        const allProductsData = docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            name: data.name,
-            price: data.price,
-            imageSrc: data.imageSrc,
-            collectionName: data.collectionName, // If needed for routing
-          } as Product;
-        });
-        setProducts(allProductsData);
-      })
-      .catch((error) => {
-        setError(true);
-        console.error(error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   getAllProductDocuments()
+  //     .then((docs) => {
+  //       // Map QueryDocumentSnapshot to Product[]
+  //       const allProductsData = docs.map((doc) => {
+  //         const data = doc.data();
+  //         return {
+  //           id: doc.id,
+  //           name: data.name,
+  //           price: data.price,
+  //           imageSrc: data.imageSrc,
+  //           collectionName: data.collectionName, // If needed for routing
+  //         } as Product;
+  //       });
+  //       setProducts(allProductsData);
+  //     })
+  //     .catch((error) => {
+  //       setError(true);
+  //       console.error(error);
+  //     });
+  // }, []);
 
 
   const images = [

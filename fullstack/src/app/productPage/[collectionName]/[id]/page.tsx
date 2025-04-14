@@ -29,12 +29,12 @@ export default function ProductPage() {
         handleAuthClicked,
         handleCartClicked,
         handleAccountClicked,
+        handleDashboardClicked,
        // handleSearchClicked,
         authenticated,
         cartOpen,
         setSearchText,
-        setCartOpen,
-        cartProducts} = useHeader();
+        setCartOpen} = useHeader();
   
     useEffect(() => {
       // Get Firebase authentication
@@ -90,7 +90,7 @@ export default function ProductPage() {
     return (
       <div>
         {/* Place the header at the top */}
-        <SiteHeader  setSearchText={setSearchText} authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
+        <SiteHeader  setSearchText={setSearchText} authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked} onDashboardClicked={handleDashboardClicked}/>
         {/* Rest of your product page content */}
         <div className="px-4 py-2">
           <p>Product Page</p>
@@ -128,7 +128,7 @@ export default function ProductPage() {
             <LoadingSpinner />
           )}
         </div>
-        <CartSheet cartProducts={cartProducts} onOpenChange={setCartOpen} open={cartOpen} />
+        <CartSheet onOpenChange={setCartOpen} open={cartOpen} />
       </div>
     );
   }
