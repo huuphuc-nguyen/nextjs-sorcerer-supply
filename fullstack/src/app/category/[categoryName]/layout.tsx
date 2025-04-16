@@ -9,6 +9,7 @@ const CategoryLayout = ({ children }: { children: React.ReactNode }) => {
 
     const {
     handleAuthClicked,
+    handleDashboardClicked,
     handleCartClicked,
     handleAccountClicked,
     setSearchText,
@@ -19,7 +20,7 @@ const CategoryLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-        <SiteHeader setSearchText={setSearchText} authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
+        <SiteHeader setSearchText={setSearchText} authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked} onDashboardClicked={handleDashboardClicked}/>
 
       {/* Main Content */}
       <main className="flex-grow p-8">{children}</main>

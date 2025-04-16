@@ -8,17 +8,19 @@ import { CartSheet } from "@/components/CartSheet/cart-sheet";
 const AccountLayout = ({ children }: { children: React.ReactNode }) => {
 
     const {
+      handleDashboardClicked,
     handleAuthClicked,
     handleCartClicked,
     handleAccountClicked,
     authenticated,
     cartOpen,
-    setCartOpen,} = useHeader();
+    setCartOpen,
+    setSearchText} = useHeader();
 
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-        <SiteHeader authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
+        <SiteHeader setSearchText={setSearchText} authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked} onDashboardClicked={handleDashboardClicked}/>
 
       {/* Main Content */}
       <main className="flex-grow p-8">{children}</main>

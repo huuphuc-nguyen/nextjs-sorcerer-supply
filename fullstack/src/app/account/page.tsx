@@ -1,11 +1,14 @@
 "use client"; // Ensures this component is rendered only on the client side
 
 import { useEffect, useState } from "react";
-import { useRouter } from 'nextjs-toploader/app';
-import { auth } from '@/lib/firebase/config';
-import { LoadingSpinner } from '@/components/ui/spinner';
+import { useRouter } from "nextjs-toploader/app";
+import { auth } from "@/lib/firebase/config";
+import { LoadingSpinner } from "@/components/ui/spinner";
 import { Pencil } from "lucide-react";
-import { getUserFromDatabase, updateUserInDatabase} from "@/lib/firebase/users";
+import {
+  getUserFromDatabase,
+  updateUserInDatabase,
+} from "@/lib/firebase/users";
 import { toast } from "@/hooks/use-toast";
 
 const Account = () => {
@@ -20,13 +23,14 @@ const Account = () => {
   const [payment, setPayment] = useState<string>("");
 
   useEffect(() => {
-    if (typeof window !== "undefined") { // Ensure sessionStorage access happens only client-side
+    if (typeof window !== "undefined") {
+      // Ensure sessionStorage access happens only client-side
 
       // Firebase authentication
-      auth.onAuthStateChanged(user => {
+      auth.onAuthStateChanged((user) => {
         if (!user) {
           sessionStorage.setItem("redirectAfterLogin", "/account");
-          router.push('/login');
+          router.replace("/login");
         } else {
           setLoading(false);
         }
@@ -35,40 +39,39 @@ const Account = () => {
   }, [router]); // Only run once on initial mount
 
   useEffect(() => {
-
     auth.onAuthStateChanged((user) => {
-    const uid =user?.uid;
-        
-    if (uid) {
+      const uid = user?.uid;
+
+      if (uid) {
         setUserId(uid);
-        getUserFromDatabase(uid).then((user) => {
+        getUserFromDatabase(uid)
+          .then((user) => {
             setFullName(user?.fullname || "");
             setEmail(user?.email || "");
             setAddress(user?.address || "");
             setPayment(user?.payment || "");
             console.log("User:", user);
-          }).catch((error) => {
+          })
+          .catch((error) => {
             console.error("Error fetching user data:", error);
-            }
-            ).finally(() => {
-              setLoading(false);
-              console.log("Loading finished");
-            }   
-            );
-    }
-    })
-
-    
+          })
+          .finally(() => {
+            setLoading(false);
+            console.log("Loading finished");
+          });
+      }
+    });
   }, []);
-
-
 
   // Handle Save button click to update user information
   const handleSaveClicked = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsSaving(true);
     if (userId) {
-      await updateUserInDatabase(userId, { fullname: fullName, address: address })
+      await updateUserInDatabase(userId, {
+        fullname: fullName,
+        address: address,
+      })
         .then(() => {
           setIsSaving(false);
           toast({
@@ -90,14 +93,18 @@ const Account = () => {
   };
 
   if (loading) {
-    return <div className="h-screen grid place-content-center"><LoadingSpinner /></div>;
+    return (
+      <div className="h-screen grid place-content-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start gap-10 p-16">
       <h1 className="text-2xl font-semibold">Account</h1>
       {/* Profile Section */}
-      <form className="border border-dashed rounded-xl px-16 py-6 w-1/2 grid place-items-center">
+      <form className=" bg-slate-400/10 shadow-lg backdrop-blur-md rounded-xl px-16 py-6 w-1/2 grid place-items-center">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full items-center">
           <div className="text-md flex items-center">
             <strong>Full Name:</strong>
@@ -111,7 +118,10 @@ const Account = () => {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)} // Updates local state without resetting from sessionStorage
             />
-            <Pencil className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer" size={16} />
+            <Pencil
+              className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer"
+              size={16}
+            />
           </label>
 
           <div className="text-md">
@@ -137,7 +147,10 @@ const Account = () => {
               value={address}
               onChange={(e) => setAddress(e.target.value)} // Updates local state without resetting from sessionStorage
             />
-            <Pencil className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer" size={16} />
+            <Pencil
+              className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer"
+              size={16}
+            />
           </label>
 
           <div className="text-md">

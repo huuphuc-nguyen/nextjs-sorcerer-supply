@@ -63,7 +63,12 @@ export const useHeader = () => {
     router.push('/account');
   }
 
+  const handleDashboardClicked = () => {
+    router.push('/seller-dashboard');
+  }
+
   return {
+    handleDashboardClicked,
     handleAuthClicked,
     handleCartClicked,
     handleAccountClicked,

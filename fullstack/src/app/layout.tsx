@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Sorcerer's Supply",
   description: "Wizard focused ecommerce site",
+  icons: {
+    icon: '/wand-sparkles.svg', 
+  },
 };
 
 export default function RootLayout({

@@ -2,38 +2,42 @@
 import { LoadingSpinner } from '@/components/ui/spinner';
 import { SiteHeader } from "@/components/SiteHeader/site-header";
 import { ProductCardFull } from "@/components/ProductCard/product-card";
-import { auth } from '@/lib/firebase/config';
-import { getAuth, signOut } from "firebase/auth";
+import { useHeader } from "@/hooks/use-header";
 import { getProductDocument  } from '@/lib/firebase/getProduct';
 import { DocumentSnapshot, DocumentData } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'nextjs-toploader/app';
+//import { useRouter } from 'nextjs-toploader/app';
 import { useParams } from 'next/navigation';
 import { CartSheet } from '@/components/CartSheet/cart-sheet';
-import { useSearchParams } from "next/navigation";
 
+interface CartItem {
+  productID?: string;
+  productData?: DocumentData;
+  quantity?: number;
+}
+export type { CartItem };
 
 export default function ProductPage() {
     const [loadingProducts, setLoadingProducts] = useState(false);
-    const [cartOpen, setCartOpen] = useState(false);
     const [productDocument, setProductDocument] = useState<DocumentSnapshot<DocumentData> | null>(null);
-    const [authenticated, setAuthenticated] = useState<boolean | null>(null);
-    const router = useRouter();
+    //const router = useRouter();
     const { toast } = useToast();
-    const [searchText, setSearchText] = useState("");
     const { collectionName, id } = useParams();
+
+      const {
+        handleAuthClicked,
+        handleCartClicked,
+        handleAccountClicked,
+        handleDashboardClicked,
+       // handleSearchClicked,
+        authenticated,
+        cartOpen,
+        setSearchText,
+        setCartOpen} = useHeader();
   
     useEffect(() => {
       // Get Firebase authentication
-      const unsubscribe = auth.onAuthStateChanged(user => {
-        if (user) {
-          setAuthenticated(true);
-        }
-        else {
-          setAuthenticated(false);
-        }
-      });
   
       if(id&&collectionName){
       setLoadingProducts(true);
@@ -46,46 +50,47 @@ export default function ProductPage() {
         console.log("Collection:", collectionName);
         console.log("Id:", id);
       }
-      return () => {
-        unsubscribe();
-        };
       }, [id,collectionName]);
-  
-    const handleAuthClicked = async () => {
-      const authInstance = getAuth();
-      if (!authenticated) {
-        router.push('/login');
-        return;
+
+    const handleAddToCartClicked = () => {
+      toast({
+        title: "Item added to cart",
+        variant: "success",
+        description:`"${productDocument?.data()?.name} has been added to your cart."`,
+      });
+
+      const items = localStorage.getItem("cartItems");
+      const cartItems = items ? JSON.parse(decodeURIComponent(items)) : [];
+
+      const newItem : CartItem = {
+        productID: productDocument?.id,
+        productData: productDocument?.data(),
+        quantity: 1,
+      } 
+
+      console.log("loaded", cartItems);
+
+
+      if (cartItems.length > 0) {
+        const existingItemIndex = cartItems.findIndex((item : CartItem) => item.productID === newItem.productID);
+        if (existingItemIndex !== -1) {
+          const updateItem = cartItems[existingItemIndex];
+          updateItem.quantity = (updateItem.quantity || 0) + 1;
+          cartItems[existingItemIndex] = updateItem;
+        } else {
+          cartItems.push(newItem); // Add new item if it doesn't exist
+        }
+      } else{
+        cartItems.push(newItem);
       }
-      try {
-        await signOut(authInstance);
-        toast({
-          title: "Signed out",
-          variant: "success",
-          description: "You have been signed out.",
-        });
-        router.push('/');
-      } catch (error) {
-        console.error(error);
-        toast({
-          title: "Sign out failed",
-          variant: "destructive",
-          description: "Please try again.",
-        });
-      }
-    };
-    const handleCartClicked = () => {
-      setCartOpen(true);
-    };
-  
-    const handleAccountClicked = () => {
-      router.push('/account'); 
+        console.log("Updated cart items:", cartItems);
+        localStorage.setItem("cartItems", encodeURIComponent(JSON.stringify(cartItems)))
     }
 
     return (
       <div>
         {/* Place the header at the top */}
-        <SiteHeader  setSearchText={setSearchText} authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
+        <SiteHeader  setSearchText={setSearchText} authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked} onDashboardClicked={handleDashboardClicked}/>
         {/* Rest of your product page content */}
         <div className="px-4 py-2">
           <p>Product Page</p>
@@ -109,7 +114,7 @@ export default function ProductPage() {
             <p className="text-2xl font-bold">{productDocument.data()?.name}</p>
             <p className="text-xl text-gray-500">${productDocument.data()?.price}</p>
             {productDocument.data()?.inStock ? (
-              <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+              <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={handleAddToCartClicked} >
                 Add to Cart
               </button>
             ) : (
@@ -127,4 +132,3 @@ export default function ProductPage() {
       </div>
     );
   }
-  
