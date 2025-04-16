@@ -1,11 +1,8 @@
 'use client';
 
 import { useEffect, useState, Suspense } from "react";
-import { useHeader } from "@/hooks/use-header";
-import { SiteHeader } from "@/components/SiteHeader/site-header";
 import { ProductCard } from "@/components/ProductCard/product-card";
 import { LoadingSpinner } from "@/components/ui/spinner";
-import { CartSheet } from "@/components/CartSheet/cart-sheet";
 import {
     Pagination,
     PaginationContent,
@@ -16,14 +13,12 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination"
 import { Product, searchProducts } from "../../lib/firebase/products";
-//import { useRouter } from "next/router";
 import { useSearchParams } from "next/navigation";
+import {toast} from "@/hooks/use-toast";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
   
@@ -32,18 +27,6 @@ const SearcComponent = () => {
     const [products, setProducts] = useState<Product[] | undefined>(undefined);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-
-    const {
-        handleAuthClicked,
-        handleDashboardClicked,
-        handleCartClicked,
-        handleAccountClicked,
-        handleSearchClicked,
-        authenticated,
-        cartOpen,
-        setSearchText,
-        setCartOpen,
-    } = useHeader();
 
     const searchParams = useSearchParams();
 
@@ -54,14 +37,19 @@ const SearcComponent = () => {
 
         searchProducts(searchQuery || '').then(products => {
             setProducts(products)
-        }).catch(_ => {
+        }).catch(error => {
             setError(true);
+            toast({
+                title: "Error",
+                variant: "destructive",
+                description: "There is an error: " + error.message, 
+              });
         }).finally(() => {
             setLoading(false);
         });
     }, [searchParams]);
     function sortPrice(desc = false) {
-        var sorted;
+        let sorted;
         if (desc) {
           sorted = products?.toSorted((a, b) => {return b.price - a.price});
         } else {
@@ -72,7 +60,6 @@ const SearcComponent = () => {
 
     return (
         <div>
-            <SiteHeader setSearchText={setSearchText} onCartClicked={handleCartClicked} onSearchClicked={handleSearchClicked} onDashboardClicked={handleDashboardClicked}/>
             <div className="px-4 py-1 border-b border-gray-800 flex justify-end">
          <DropdownMenu>
            <DropdownMenuTrigger>Sort by</DropdownMenuTrigger>
@@ -119,7 +106,6 @@ const SearcComponent = () => {
                     </div>
                 }
             </div>
-        <CartSheet onOpenChange={setCartOpen} open={cartOpen} />
         </div>
     );
 }

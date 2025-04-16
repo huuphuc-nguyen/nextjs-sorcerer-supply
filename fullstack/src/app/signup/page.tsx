@@ -22,6 +22,8 @@ export default function Signup() {
           const { email, password } = data;
       
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+          // Create user in database
           createUserInDatabase();
       
           toast({

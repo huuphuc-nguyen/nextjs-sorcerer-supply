@@ -2,7 +2,7 @@ import { db } from '@/lib/firebase/config'
 import { setDoc, doc, getDoc } from 'firebase/firestore'
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-const auth = getAuth();
+const auth = getAuth(); 
 
 interface User {
     id: string,
