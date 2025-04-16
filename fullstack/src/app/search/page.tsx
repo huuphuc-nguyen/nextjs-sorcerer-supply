@@ -18,6 +18,15 @@ import {
 import { Product, searchProducts } from "../../lib/firebase/products";
 //import { useRouter } from "next/router";
 import { useSearchParams } from "next/navigation";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+  } from "@/components/ui/dropdown-menu"
+  
 
 const SearcComponent = () => {
     const [products, setProducts] = useState<Product[] | undefined>(undefined);
@@ -51,10 +60,29 @@ const SearcComponent = () => {
             setLoading(false);
         });
     }, [searchParams]);
+    function sortPrice(desc = false) {
+        var sorted;
+        if (desc) {
+          sorted = products?.toSorted((a, b) => {return b.price - a.price});
+        } else {
+          sorted = products?.toSorted((a, b) => {return a.price - b.price});
+        }
+        setProducts(sorted);
+    }
 
     return (
         <div>
             <SiteHeader setSearchText={setSearchText} onCartClicked={handleCartClicked} onSearchClicked={handleSearchClicked} onDashboardClicked={handleDashboardClicked}/>
+            <div className="px-4 py-1 border-b border-gray-800 flex justify-end">
+         <DropdownMenu>
+           <DropdownMenuTrigger>Sort by</DropdownMenuTrigger>
+           <DropdownMenuContent className="dark">
+             <DropdownMenuItem onClick={() => sortPrice()}>Price: Low to High</DropdownMenuItem>
+             <DropdownMenuItem onClick={() => sortPrice(true)}>Price: High to Low</DropdownMenuItem>
+             <DropdownMenuItem>In Stock</DropdownMenuItem>
+           </DropdownMenuContent>
+         </DropdownMenu>
+       </div>
             <div className="m-4">
                 {loading && <LoadingSpinner />}
                 {error && <div>An error occured</div>}
