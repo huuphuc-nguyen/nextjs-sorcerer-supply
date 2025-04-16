@@ -11,6 +11,8 @@ import { DialogProps } from "@radix-ui/react-dialog";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { CartItem } from "@/app/productPage/[collectionName]/[id]/page";
+import { toast } from "@/hooks/use-toast";
+import { createOrderInDatabase } from "@/lib/firebase/order";
 
 interface CartProduct {
     name: string,
@@ -27,8 +29,6 @@ export function CartSheet({ ...rest }: DialogProps){
         const currentCart = localStorage.getItem("cartItems");
         const cartItems = currentCart ? JSON.parse(decodeURIComponent(currentCart)) : [];
 
-        console.log("Cart items loaded from localStorage:", cartItems);
-        
         const products: CartProduct[] = cartItems.map((item: CartItem) => {
           const product = item.productData;
           const quantity = item.quantity;
@@ -40,7 +40,7 @@ export function CartSheet({ ...rest }: DialogProps){
             image: product?.imageSrc,
           };
         });
-        console.log("Cart items loaded from localStorage:", products);
+
         setCart(products); 
     },[rest.open]);
 
@@ -74,13 +74,12 @@ export function CartSheet({ ...rest }: DialogProps){
                 return product;
             });
             return updatedCart;
-            
         });
 
         const currentCart = localStorage.getItem("cartItems");
         const cartItems = currentCart ? JSON.parse(decodeURIComponent(currentCart)) : [];
         cartItems.map((item: CartItem) => {
-            if (item?.productData?.name == name && item.quantity) {
+            if (item?.productData?.name == name && item.quantity && item.quantity > 1) {
                 item.quantity -= 1;
             }
         });
@@ -98,7 +97,19 @@ export function CartSheet({ ...rest }: DialogProps){
             const updatedCart = prevCart.filter((product) => product.name !== name);
             return updatedCart;
         });
+
+        toast({
+            title: "Item removed from cart",
+            variant: "success",
+            description:`${name} has been removed from your cart.`,
+        })
     };
+
+    const handleCheckoutClicked = () => {
+        const currentCart = localStorage.getItem("cartItems");
+        const cartItems = currentCart ? JSON.parse(decodeURIComponent(currentCart)) : [];
+        createOrderInDatabase(cartItems);
+    }
 
     return (
         <Sheet {...rest}>
@@ -133,7 +144,7 @@ export function CartSheet({ ...rest }: DialogProps){
                         ))}
                     </div>
                     <div className="flex justify-center">
-                        <Button className="dark w-full"><ShoppingBasket />Checkout</Button>
+                        <Button className="dark w-full" onClick={handleCheckoutClicked}><ShoppingBasket />Checkout</Button>
                     </div>
                 </div>
             </SheetContent>

@@ -1,15 +1,12 @@
 "use client";
 import { LoadingSpinner } from '@/components/ui/spinner';
-import { SiteHeader } from "@/components/SiteHeader/site-header";
 import { ProductCardFull } from "@/components/ProductCard/product-card";
-import { useHeader } from "@/hooks/use-header";
 import { getProductDocument  } from '@/lib/firebase/getProduct';
 import { DocumentSnapshot, DocumentData } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useToast } from '@/hooks/use-toast';
 //import { useRouter } from 'nextjs-toploader/app';
 import { useParams } from 'next/navigation';
-import { CartSheet } from '@/components/CartSheet/cart-sheet';
 
 interface CartItem {
   productID?: string;
@@ -24,17 +21,6 @@ export default function ProductPage() {
     //const router = useRouter();
     const { toast } = useToast();
     const { collectionName, id } = useParams();
-
-      const {
-        handleAuthClicked,
-        handleCartClicked,
-        handleAccountClicked,
-        handleDashboardClicked,
-       // handleSearchClicked,
-        authenticated,
-        cartOpen,
-        setSearchText,
-        setCartOpen} = useHeader();
   
     useEffect(() => {
       // Get Firebase authentication
@@ -89,8 +75,6 @@ export default function ProductPage() {
 
     return (
       <div>
-        {/* Place the header at the top */}
-        <SiteHeader  setSearchText={setSearchText} authenticated={authenticated} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked} onDashboardClicked={handleDashboardClicked}/>
         {/* Rest of your product page content */}
         <div className="px-4 py-2">
           <p>Product Page</p>
@@ -128,7 +112,6 @@ export default function ProductPage() {
             <LoadingSpinner />
           )}
         </div>
-        <CartSheet onOpenChange={setCartOpen} open={cartOpen} />
       </div>
     );
   }

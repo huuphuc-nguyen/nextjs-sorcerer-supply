@@ -15,7 +15,7 @@ interface SiteHeaderProps {
   authenticated?: boolean | null;
   setSearchText: Dispatch<SetStateAction<string>>;
   onAuthClicked?: MouseEventHandler<HTMLButtonElement>;
-  onSearchClicked?: MouseEventHandler<HTMLButtonElement>;
+  onSearchClicked?: () => void
   onCartClicked?: MouseEventHandler<HTMLButtonElement>;
   onAccountClicked?: MouseEventHandler<HTMLButtonElement>;
   onDashboardClicked?: MouseEventHandler<HTMLButtonElement>;
@@ -47,6 +47,11 @@ export function SiteHeader({
           <Input
             onChange={(e) => {
               setSearchText(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                onSearchClicked?.();
+              }
             }}
             placeholder="Search products"
           ></Input>
