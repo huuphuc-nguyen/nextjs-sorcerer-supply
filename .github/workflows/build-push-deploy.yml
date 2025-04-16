@@ -1,0 +1,71 @@
+name: Build, Push, and Deploy
+
+on:
+  push:
+    branches:
+      - dev
+
+env:
+  # Use GitHub Container Registry (GHCR)
+  REGISTRY: ghcr.io
+  # Image name using <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
+  # Firebase Secrets
+  NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+  NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+  NEXT_PUBLIC_FIREBASE_MSG_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MSG_SENDER_ID }}
+  NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+
+      - name: Build Docker Image
+        run: |
+          docker build \
+            --build-arg NEXT_PUBLIC_FIREBASE_API_KEY=$NEXT_PUBLIC_FIREBASE_API_KEY \
+            --build-arg NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=$NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN \
+            --build-arg NEXT_PUBLIC_FIREBASE_PROJECT_ID=$NEXT_PUBLIC_FIREBASE_PROJECT_ID \
+            --build-arg NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=$NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET \
+            --build-arg NEXT_PUBLIC_FIREBASE_MSG_SENDER_ID=$NEXT_PUBLIC_FIREBASE_MSG_SENDER_ID \
+            --build-arg NEXT_PUBLIC_FIREBASE_APP_ID=$NEXT_PUBLIC_FIREBASE_APP_ID \
+            -t $REGISTRY/$IMAGE_NAME:latest fullstack/
+      - name: Push Docker Image
+        run: docker push $REGISTRY/$IMAGE_NAME:latest
+  deploy-to-vps:
+    runs-on: ubuntu-latest
+    needs: build-and-push  # Ensures the build finishes before deploying
+
+    steps:
+      - name: SSH into VPS and Deploy Docker Container
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            echo "Logging into GitHub Container Registry..."
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+            
+            echo "Pulling latest Docker image..."
+            docker pull ghcr.io/${{ github.repository }}:latest
+
+            echo "Stopping and removing old container..."
+            docker stop sorcerer_app || true
+            docker rm sorcerer_app || true
+
+            echo "Running new container..."
+            docker run -d --name sorcerer_app -p 3000:3000 ghcr.io/${{ github.repository }}:latest

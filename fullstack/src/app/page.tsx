@@ -1,109 +1,103 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from 'nextjs-toploader/app';
+import { getProducts, Product } from '@/lib/firebase/products';
 import { LoadingSpinner } from '@/components/ui/spinner';
 import { SiteHeader } from "@/components/SiteHeader/site-header";
 import { ProductCard } from "@/components/ProductCard/product-card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
-import { auth } from '@/app/firebase/config';
-import { getProducts, Product } from '@/app/firebase/products';
-import { useToast } from '@/hooks/use-toast';
-
-import { useEffect, useState } from "react";
-import { useRouter } from 'next/navigation';
-import { getAuth, signOut } from "firebase/auth";
+import { CartSheet } from '@/components/CartSheet/cart-sheet';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { useHeader } from "@/hooks/use-header";
 
 export default function Home() {
 
-  const { toast } = useToast();
   const router = useRouter();
-
-  const [authenticated, setAuthenticated] = useState<boolean | null>(null);
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [products, setProducts] = useState<Product[]>();
+
+  const {
+    handleAuthClicked,
+    handleCartClicked,
+    handleAccountClicked,
+    handleSearchClicked,
+    handleDashboardClicked,
+    authenticated,
+    cartOpen,
+    setSearchText,
+    setCartOpen,} = useHeader();
 
   useEffect(() => {
-    // Get Firebase authentication
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      setAuthenticated(user ? true : false);
-    });
-
-    // Get products from Firestore
     getProducts()
-      .then(products => setProducts(products))
-      .catch(_ => {setError(true)})
-      .finally(() => { setLoading(false) });
-
-    // Clean up auth callback
-    return () => { unsubscribe() }
+      .then((products) => setFeaturedProducts(products))
+      .catch((error) => {
+        setError(true);
+        console.error(error);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  const handleAuthClicked = async () => {
-    const auth = getAuth();
-
-    // Check for authentication status
-    if (!authenticated) {
-      // User isn't logged in, go to login page
-      router.push('/login');
-
-      return;
-    }
-    else {
-      // User is logged in, try signing out
-      try {
-        await signOut(auth);
-
-        toast({
-          title: "Signed out",
-          variant: "success",
-          description: "You have been signed out.",
-        });
-
-        router.push('/');
-      }
-      catch (error) {
-        console.error(error);
-
-        toast({
-          title: "Sign out failed",
-          variant: "destructive",
-          description: "Please try again.",
-        });
-      }
-    }
-  };
+  const images = [
+    '/depositphotos_227387246-stock-photo-photo-of-three-witches-with.jpg',
+    '/gettyimages-175543914-612x612.jpg',
+    '/gettyimages-1186887201-612x612.jpg'
+  ];
 
   return (
     <div>
-      <SiteHeader authenticated={authenticated} onAuthClicked={handleAuthClicked} />
-      <div className="px-4 py-1 border-b border-gray-800 flex justify-end">
-        <DropdownMenu >
-          <DropdownMenuTrigger>Sort by</DropdownMenuTrigger>
-          <DropdownMenuContent className='dark'>
-            <DropdownMenuItem>Price: Low to High</DropdownMenuItem>
-            <DropdownMenuItem>Price: High to Low</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      <div className='m-4'>
-        <p>Products</p>
-
-        {loading && <LoadingSpinner />}
-        {error && <p>There was an error loading the products</p>}
-        {!loading && !error && products &&
-          <div className='my-2 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-10 place-items-center'>
-            {products.map(product => (
-              <ProductCard key={product.id} name={product.name} price={product.price} imageSrc={product.imageSrc} />
+      <SiteHeader authenticated={authenticated} setSearchText={setSearchText} onDashboardClicked={handleDashboardClicked} onSearchClicked={handleSearchClicked} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
+      <div className='flex justify-center py-4'>
+        <Carousel className='w-full max-w-xl' id="hero-carousel" opts={{ loop: true }}>
+          <CarouselContent>
+            {images.map((value, index) => (
+              <CarouselItem className="flex content-center" key={index}>
+                <img src={value} alt={"fuck me man - ok"} />
+              </CarouselItem>
             ))}
-          </div>}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
+
+      <div className='flex flex-col gap-4 justify-center w-full px-[10%] py-4'>
+        <p>Featured</p>
+        {loading &&
+          <div className="flex justify-center">
+            <LoadingSpinner className="w-32 h-32" />
+          </div>
+        }
+        {!loading &&
+          <Carousel className='w-full'>
+            <CarouselContent>
+              {
+                featuredProducts?.map((product) => {
+                  return (
+                    <CarouselItem className='basis-1/5' key={product.id}
+                      onClick={() =>
+                        router.push(`/productPage/${product.collectionName}/${product.id}`)
+                      }
+                      style={{ cursor: "pointer" }}>
+                      <ProductCard
+                        key={product.id}
+                        name={product.name}
+                        price={product.price}
+                        imageSrc={product.imageSrc}
+                      />
+                    </CarouselItem>
+                  );
+                })}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+        }
+        {/* {loading && <LoadingSpinner />} */}
+        {error && <p>There was an error loading the products</p>}
+      </div>
+
+      <CartSheet onOpenChange={setCartOpen} open={cartOpen}/>
     </div>
   );
 }

@@ -1,37 +1,86 @@
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-
-import { ShoppingCart, Search, WandSparkles } from 'lucide-react';
-import { MouseEventHandler } from 'react';
-import Link from 'next/link';
+import Link from "next/link";
+import { Dispatch, MouseEventHandler, SetStateAction } from "react";
+import {
+  ShoppingCart,
+  Search,
+  WandSparkles,
+  User,
+  LayoutDashboard,
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import CategoriesDropdownMenu from "./categories-menu";
 
 interface SiteHeaderProps {
-    authenticated?: boolean | null,
-    onAuthClicked?: MouseEventHandler<HTMLButtonElement>,
-    onSearchClicked?: MouseEventHandler<HTMLButtonElement>
+  authenticated?: boolean | null;
+  setSearchText: Dispatch<SetStateAction<string>>;
+  onAuthClicked?: MouseEventHandler<HTMLButtonElement>;
+  onSearchClicked?: () => void
+  onCartClicked?: MouseEventHandler<HTMLButtonElement>;
+  onAccountClicked?: MouseEventHandler<HTMLButtonElement>;
+  onDashboardClicked?: MouseEventHandler<HTMLButtonElement>;
 }
 
-export function SiteHeader({authenticated, onAuthClicked, onSearchClicked} : SiteHeaderProps) {
-    return (
-        <div className="flex p-4 border-b border-gray-800">
-            <div className="flex items-center gap-2">
-                <WandSparkles/>
-                <Link href={"/"}>SORCERER&apos;S SUPPLY</Link>
-            </div>
-            <div className="flex items-center gap-4 ml-auto">
-                <div className="flex items-center gap-2">
-                    <Input placeholder="Search products"></Input>
-                    <Button variant="outline" size="icon" onClick={onSearchClicked}>
-                        <Search/>
-                    </Button>
-                </div>
-                <Button onClick={onAuthClicked}>
-                    {authenticated === null ? '...' : authenticated ? 'Sign out' : 'Log in'}
-                </Button>
-                <Button>
-                    <ShoppingCart/> Cart
-                </Button>
-            </div>
+export function SiteHeader({
+  authenticated,
+  setSearchText,
+  onAuthClicked,
+  onSearchClicked,
+  onCartClicked,
+  onAccountClicked,
+  onDashboardClicked,
+}: SiteHeaderProps) {
+  return (
+    <div className="flex p-4 border-b border-gray-800">
+      <div className="flex items-center gap-2">
+        {/* Logo */}
+        <WandSparkles />
+        <Link href={"/"}>SORCERER&apos;S SUPPLY</Link>
+
+        {/* Categories Dropdown Menu */}
+        <CategoriesDropdownMenu />
+      </div>
+
+      <div className="flex items-center gap-4 ml-auto">
+        {/* Search Bar */}
+        <div className="flex items-center gap-2">
+          <Input
+            onChange={(e) => {
+              setSearchText(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                onSearchClicked?.();
+              }
+            }}
+            placeholder="Search products"
+          ></Input>
+          <Button variant="outline" size="icon" onClick={onSearchClicked}>
+            <Search />
+          </Button>
         </div>
-    );
+
+        {/* Buttons */}
+        <Button onClick={onAuthClicked}>
+          {authenticated === null
+            ? "..."
+            : authenticated
+            ? "Sign out"
+            : "Log in"}
+        </Button>
+
+        <Button onClick={onAccountClicked}>
+          <User /> Account
+        </Button>
+
+        <Button onClick={onDashboardClicked}>
+          <LayoutDashboard /> Dashboard
+        </Button>
+
+        <Button onClick={onCartClicked}>
+          <ShoppingCart /> Cart
+        </Button>
+      </div>
+    </div>
+  );
 }
