@@ -43,17 +43,17 @@ export function SiteHeader({
 
       <div className="flex items-center gap-4 ml-auto">
         {/* Search Bar */}
-        <div className="flex items-center gap-2">
+        <form className="flex items-center gap-2">
           <Input
             onChange={(e) => {
               setSearchText(e.target.value);
             }}
             placeholder="Search products"
           ></Input>
-          <Button variant="outline" size="icon" onClick={onSearchClicked}>
+          <Button type="submit" variant="outline" size="icon" onClick={onSearchClicked}>
             <Search />
           </Button>
-        </div>
+        </form>
 
         {/* Buttons */}
         <Button onClick={onAuthClicked}>
