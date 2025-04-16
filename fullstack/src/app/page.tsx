@@ -94,23 +94,6 @@ export default function Home() {
       </div>
 
       <div className='flex flex-col gap-4 justify-center w-full px-[10%] py-4'>
-        <p>Collections</p>
-        <Carousel className='w-full'>
-          <CarouselContent>
-            {categories.map((value, index) => (
-              <CarouselItem className='basis-1/5' key={index}>
-                <Card className='h-36 flex'>
-                  <CardContent>
-                    <p>{value}</p>
-                  </CardContent>
-                </Card>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselNext />
-          <CarouselPrevious />
-        </Carousel>
-        
         <p>Featured</p>
         {loading &&
           <div className="flex justify-center">
