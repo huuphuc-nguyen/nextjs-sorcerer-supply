@@ -94,19 +94,32 @@ export default function ProductPage() {
             />
           </div>
           {/* Right: Product Details */}
-          <div className="max-h-[80vh] w-full md:w-1/2 lg:w-1/2 xl:w-1/2 min-h-full flex flex-col justify-end">
-            <p className="text-2xl font-bold">{productDocument.data()?.name}</p>
-            <p className="text-xl text-gray-500">${productDocument.data()?.price}</p>
-            {productDocument.data()?.inStock ? (
-              <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={handleAddToCartClicked} >
-                Add to Cart
-              </button>
-            ) : (
-              <button className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                Out of Stock
-              </button>
-            )}
-          </div>
+          <div className="max-h-[80vh] w-full md:w-1/2 lg:w-1/2 xl:w-1/2 min-h-full flex flex-col gap-6">
+              {/* Description Section */}
+              <div className=" p-4 rounded shadow-sm">
+                <p className="text-md ">
+                  {productDocument.data()?.description}
+                </p>
+              </div>
+
+              {/* Name, Price, Button Section */}
+              <div className="flex flex-col justify-end">
+                <p className="text-2xl font-bold">{productDocument.data()?.name}</p>
+                <p className="text-xl text-gray-500">${productDocument.data()?.price}</p>
+                {productDocument.data()?.inStock ? (
+                  <button
+                    className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    onClick={handleAddToCartClicked}
+                  >
+                    Add to Cart
+                  </button>
+                ) : (
+                  <button className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                    Out of Stock
+                  </button>
+                )}
+              </div>
+            </div>
             </>
           ) : (
             <LoadingSpinner />
