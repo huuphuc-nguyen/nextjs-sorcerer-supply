@@ -85,7 +85,7 @@ async function updateProductQuantity(collectionName: string, id: string, quantit
         await setDoc(docRef, { quantity: quantity < 0 ? 0 : quantity, inStock: quantity > 0 ? true : false }, { merge: true });
 
     } catch (error) {
-        throw new Error(`Error updating product quantity: ${error}`);
+        console.error("Error updating product quantity:", error);
     }
 }
 

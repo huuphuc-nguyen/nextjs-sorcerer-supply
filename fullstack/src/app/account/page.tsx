@@ -10,7 +10,7 @@ import {
   updateUserInDatabase,
 } from "@/lib/firebase/users";
 import { toast } from "@/hooks/use-toast";
-import { getOrdersFromDatabase, Order } from "@/lib/firebase/order";
+import { getThisUserOrdersFromDatabase, Order } from "@/lib/firebase/order";
 import Image from "next/image";
 
 const Account = () => {
@@ -69,7 +69,7 @@ const Account = () => {
   // Fetch order history
   useEffect(() => {
     const fetchOrders = async () => {
-      const result = await getOrdersFromDatabase();
+      const result = await getThisUserOrdersFromDatabase();
       if (result) {
         setOrders(result);
         console.log("Orders:", orders);

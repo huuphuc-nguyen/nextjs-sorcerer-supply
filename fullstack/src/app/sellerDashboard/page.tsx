@@ -5,6 +5,7 @@ import Image from "next/image";
 import { getCategory } from "@/lib/firebase/getCategory";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useParams } from "next/navigation";
+import { getAllOrdersFromDatabase } from "@/lib/firebase/order";
 
 type Product = {
     name: string;
@@ -30,6 +31,21 @@ const sampleOrders: Order[] = [
 const SellerDashboard = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isOrdersLoading, setOrdersLoading] = useState(true);
+
+    useEffect(() => {
+        getAllOrdersFromDatabase()
+            .then((orders) => {
+                console.log("Orders from database:", orders);
+            })
+            .catch((error) => {
+                console.error("Error fetching orders:", error);
+            })
+            .finally(() => {
+                setOrdersLoading(false);
+            }
+        );
+    },[]);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -113,7 +129,7 @@ const SellerDashboard = () => {
                                 <CardTitle>{product.name}</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-gray-400">${product.price.toFixed(2)}</p>
+                                <p className="text-gray-400">${product.price}</p>
                                 <button className="mt-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded">s</button>
                             </CardContent>
                         </Card>
@@ -135,8 +151,11 @@ const SellerDashboard = () => {
             </div>
 
             {/* Order */}
-            <div className="mt-6">
-                <h2 className="text-lg font-semibold">Order History</h2>
+            <h2 className="text-lg font-semibold  mt-6">Order History</h2>
+            {isOrdersLoading ? (
+                <div className="flex justify-start mt-4">
+                    <p className="text-gray-400">Loading orders...</p>
+                </div>) :  <div className="mt-6">
                 <div className="grid grid-cols-1 gap-4 mt-2">
                     {sampleOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(order => (
                         <Card key={order.id} className="bg-gray-900 border border-gray-700 text-white">
@@ -151,7 +170,8 @@ const SellerDashboard = () => {
                         </Card>
                     ))}
                 </div>
-            </div>
+            </div>}
+           
         </div>
     );
 };
