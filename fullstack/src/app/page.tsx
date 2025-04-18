@@ -52,7 +52,7 @@ export default function Home() {
           <CarouselContent>
             {images.map((value, index) => (
               <CarouselItem className="flex content-center" key={index}>
-                <img src={value} alt={"fuck me man - ok"} />
+                <img src={value} alt={"???"} />
               </CarouselItem>
             ))}
           </CarouselContent>

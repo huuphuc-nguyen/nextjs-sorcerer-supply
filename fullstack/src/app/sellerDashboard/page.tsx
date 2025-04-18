@@ -32,6 +32,21 @@ const sampleOrders: Order[] = [
 const SellerDashboard = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isOrdersLoading, setOrdersLoading] = useState(true);
+
+    useEffect(() => {
+        getAllOrdersFromDatabase()
+            .then((orders) => {
+                console.log("Orders from database:", orders);
+            })
+            .catch((error) => {
+                console.error("Error fetching orders:", error);
+            })
+            .finally(() => {
+                setOrdersLoading(false);
+            }
+        );
+    },[]);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -126,6 +141,7 @@ const SellerDashboard = () => {
                 </div>
             )}
 
+
             {/* Store Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                 <Card className="bg-gray-900 border border-gray-700 text-white">
@@ -140,8 +156,11 @@ const SellerDashboard = () => {
             </div>
 
             {/* Order */}
-            <div className="mt-6">
-                <h2 className="text-lg font-semibold">Order History</h2>
+            <h2 className="text-lg font-semibold  mt-6">Order History</h2>
+            {isOrdersLoading ? (
+                <div className="flex justify-start mt-4">
+                    <p className="text-gray-400">Loading orders...</p>
+                </div>) :  <div className="mt-6">
                 <div className="grid grid-cols-1 gap-4 mt-2">
                     {sampleOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(order => (
                         <Card key={order.id} className="bg-gray-900 border border-gray-700 text-white">
@@ -156,7 +175,8 @@ const SellerDashboard = () => {
                         </Card>
                     ))}
                 </div>
-            </div>
+            </div>}
+           
         </div>
     );
 };
