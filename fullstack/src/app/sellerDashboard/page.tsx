@@ -8,6 +8,8 @@ import { useParams } from "next/navigation";
 import router from "next/router";
 import { ProductCard } from "@/components/ProductCard/product-card";
 import { getAllOrdersFromDatabase } from "@/lib/firebase/order";
+import { useRouter } from 'nextjs-toploader/app';
+
 
 type Product = {
     name: string;
@@ -31,6 +33,7 @@ const sampleOrders: Order[] = [
 ];
 
 const SellerDashboard = () => {
+    const router = useRouter();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [isOrdersLoading, setOrdersLoading] = useState(true);
@@ -95,7 +98,6 @@ const SellerDashboard = () => {
                 <h1 className="text-2xl font-bold">Seller Dashboard</h1>
                 <div className="flex gap-4 text-sm font-medium">
                     <a href="#" className="hover:underline">Dashboard</a>
-                    <a href="#" className="hover:underline">Products</a>
                     <a href="#" className="hover:underline">Checkout</a>
                     <a href="#" className="hover:underline">Discounts</a>
                 </div>
@@ -128,7 +130,7 @@ const SellerDashboard = () => {
                         <div
                             key={product.id}
                             onClick={() =>
-                                router.push(`/productPage/${product.collectionName}/${product.id}`)
+                                router.push(`/modifyItems/${product.collectionName}/${product.id}`)
                             }
                             style={{ cursor: "pointer" }}
                         >
