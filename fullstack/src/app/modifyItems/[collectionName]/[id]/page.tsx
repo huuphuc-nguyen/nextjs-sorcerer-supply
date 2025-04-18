@@ -54,8 +54,8 @@ export default function modifyItems() {
                 <h1 className="text-2xl font-bold">Seller Dashboard</h1>
                 <div className="flex gap-4 text-sm font-medium">
                     <a href="/sellerDashboard" className="hover:underline">Dashboard</a>
-                    <a href="#" className="hover:underline">Checkout</a>
                     <a href="#" className="hover:underline">Discounts</a>
+                    <a href="/" className="hover:underline">Back to Store</a>
                 </div>
             </nav>
 
