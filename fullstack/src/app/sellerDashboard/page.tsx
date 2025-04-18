@@ -113,7 +113,7 @@ const SellerDashboard = () => {
                                 <CardTitle>{product.name}</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-gray-400">${product.price.toFixed(2)}</p>
+                                <p className="text-gray-400">${product.price}</p>
                                 <button className="mt-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded">s</button>
                             </CardContent>
                         </Card>

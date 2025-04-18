@@ -9,9 +9,9 @@ interface Product {
     name: string,
     price: number,
     collectionName: string,
-    description: string,
-    inStock: boolean,
-    quantity: number,
+    description?: string,
+    inStock?: boolean,
+    quantity?: number,
 };
 
 async function searchProducts(searchTerm: string): Promise<Product[]> {
