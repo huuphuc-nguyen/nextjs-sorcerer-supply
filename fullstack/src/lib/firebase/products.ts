@@ -89,6 +89,46 @@ async function updateProductQuantity(collectionName: string, id: string, quantit
     }
 }
 
-export { getProductDocuments, getProducts, searchProducts, updateProductQuantity };
+async function updateProductPrice(collectionName: string,id: string,price: number) {
+    try {
+      const docRef = doc(db, collectionName, id)
+      await setDoc(
+        docRef,
+        { price: price < 0 ? 0 : price },  
+        { merge: true }
+      )
+    } catch (error) {
+      console.error('Error updating product price:', error)
+    }
+  }
+
+  async function updateProductName(collectionName: string,id: string,name: string) {
+    try {
+      const docRef = doc(db, collectionName, id)
+      await setDoc(
+        docRef,
+        { name: name.trim() }, 
+        { merge: true }
+      )
+    } catch (error) {
+      console.error('Error updating product name:', error)
+    }
+  }
+  
+  async function updateProductDescription(collectionName: string,id: string,description: string) {
+    try {
+      const docRef = doc(db, collectionName, id)
+      await setDoc(
+        docRef,
+        { description: description.trim() },
+        { merge: true }
+      )
+    } catch (error) {
+      console.error('Error updating product description:', error)
+    }
+  }
+
+export { getProductDocuments, getProducts, searchProducts, updateProductQuantity,
+     updateProductPrice, updateProductName, updateProductDescription };
 
 export type { Product };
