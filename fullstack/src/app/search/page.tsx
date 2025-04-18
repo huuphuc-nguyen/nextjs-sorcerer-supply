@@ -21,6 +21,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
+  import Link from 'next/link';
   
 
 const SearcComponent = () => {
@@ -77,7 +78,10 @@ const SearcComponent = () => {
                     <div className="flex flex-col gap-4">
                         <p>Products</p>
                         <div className="flex flex-wrap gap-4">
-                            {products.map(product => { return <ProductCard key={product.id} name={product.name} price={product.price} imageSrc={product.imageSrc} /> })}
+                            {products.map(product => { return (
+                            <Link key={product.id} href={`/productPage/${product.collectionName}/${product.id}`}>
+                                <ProductCard key={product.id} name={product.name} price={product.price} imageSrc={product.imageSrc} /> 
+                            </Link>)})}
                         </div>
                         <Pagination>
                             <PaginationContent>

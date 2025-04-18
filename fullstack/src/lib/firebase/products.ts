@@ -1,5 +1,5 @@
 import { db } from '@/lib/firebase/config'
-import { collection, DocumentData, getDocs, QueryDocumentSnapshot, query, limit, where } from 'firebase/firestore'
+import { collection, DocumentData, getDocs, QueryDocumentSnapshot, query, limit, setDoc, doc } from 'firebase/firestore'
 
 const collectionNames = ["wands", "spellBooks", "staffs", "scrolls", "magicItems", "ingredients", "cursedItems", "creatures"];
 
@@ -78,6 +78,17 @@ async function getProductDocuments(): Promise<QueryDocumentSnapshot<DocumentData
     }
 }
 
-export { getProductDocuments, getProducts, searchProducts };
+async function updateProductQuantity(collectionName: string, id: string, quantity: number) {
+    try {
+        const docRef = doc(db, collectionName, id);
+        
+        await setDoc(docRef, { quantity: quantity < 0 ? 0 : quantity, inStock: quantity > 0 ? true : false }, { merge: true });
+
+    } catch (error) {
+        throw new Error(`Error updating product quantity: ${error}`);
+    }
+}
+
+export { getProductDocuments, getProducts, searchProducts, updateProductQuantity };
 
 export type { Product };
