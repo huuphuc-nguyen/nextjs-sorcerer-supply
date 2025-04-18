@@ -5,7 +5,8 @@ import Image from "next/image";
 import { getCategory } from "@/lib/firebase/getCategory";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useParams } from "next/navigation";
-import { getAllOrdersFromDatabase } from "@/lib/firebase/order";
+import router from "next/router";
+import { ProductCard } from "@/components/ProductCard/product-card";
 
 type Product = {
     name: string;
@@ -110,7 +111,6 @@ const SellerDashboard = () => {
                 />
                 <div className="ml-4">
                     <h2 className="text-xl font-bold">Profile Name</h2>
-                    <p className="text-gray-400">Home & Furniture Seller</p>
                     <div className="flex gap-4 mt-2 text-gray-400 text-sm">
 
                     </div>
@@ -118,24 +118,29 @@ const SellerDashboard = () => {
             </div>
 
             {/* Product Listings */}
-            <h2 className="text-lg font-semibold">Products</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                {loading ? (
-                    <p className="text-gray-400">Loading products...</p>
-                ) : (
-                    products.map((product) => (
-                        <Card key={product.id} className="bg-gray-900 border border-gray-700 text-white">
-                            <CardHeader>
-                                <CardTitle>{product.name}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-gray-400">${product.price}</p>
-                                <button className="mt-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded">s</button>
-                            </CardContent>
-                        </Card>
-                    ))
-                )}
-            </div>
+            <h2 className="text-lg font-semibold mb-4">Products</h2>
+            {loading ? (
+                <p className="text-gray-400">Loading products...</p>
+            ) : (
+                <div className="p-[2rem] grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-10 place-items-center">
+                    {products.map((product) => (
+                        <div
+                            key={product.id}
+                            onClick={() =>
+                                router.push(`/productPage/${product.collectionName}/${product.id}`)
+                            }
+                            style={{ cursor: "pointer" }}
+                        >
+                            <ProductCard
+                                name={product.name}
+                                price={product.price}
+                                imageSrc={product.imageSrc}
+                            />
+                        </div>
+                    ))}
+                </div>
+            )}
+
 
             {/* Store Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
