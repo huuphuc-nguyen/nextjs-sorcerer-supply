@@ -29,6 +29,8 @@ export function CartSheet({ ...rest }: DialogProps){
         const currentCart = localStorage.getItem("cartItems");
         const cartItems = currentCart ? JSON.parse(decodeURIComponent(currentCart)) : [];
 
+        console.log("from cartsheet",cartItems);
+
         const products: CartProduct[] = cartItems.map((item: CartItem) => {
           const product = item.productData;
           const quantity = item.quantity;
