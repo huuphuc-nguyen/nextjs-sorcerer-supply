@@ -59,12 +59,18 @@ const SearcComponent = () => {
     }
 
     function hideOutOfStock() {
+
+        // console.log('fugg', products)
+
         var inStock = [];
         for (let product of products ? products : []) {
             if (product.quantity > 0) {
                 inStock.push(product);
             }
         }
+
+        // let newProducts = products?.filter((product) => product.quantity > 0)
+
         setProducts(inStock);
     }
 
