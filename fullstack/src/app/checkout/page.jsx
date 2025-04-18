@@ -6,15 +6,15 @@ import React from "react";
 import Image from 'next/image';
 import "./style.css";
 
-import UserIcon from '../../assets/checkout/user_icon.png';
-import EmailIcon from "../../assets/checkout/email_icon.png";
-import AddressIcon from "../../assets/checkout/address_icon.png";
-import CityIcon from "../../assets/checkout/city_icon.png";
-import VisaLogo from "../../assets/checkout/visa-logo-png-transparent.png"
-import AmexLogo from "../../assets/checkout/american express_amex_card.png"
-import MasterLogo from "../../assets/checkout/mastercard_icon.png"
-import DiscoverLogo from "../../assets/checkout/card_credit_discover_logo.png"
-import CartLogo from "../../assets/checkout/cart_shopping_icon.png"
+import UserIcon from './assets/user_icon.png';
+import EmailIcon from "./assets/email_icon.png";
+import AddressIcon from "./assets/address_icon.png";
+import CityIcon from "./assets/city_icon.png";
+import VisaLogo from "./assets/visa-logo-png-transparent.png"
+import AmexLogo from "./assets/american express_amex_card.png"
+import MasterLogo from "./assets/mastercard_icon.png"
+import DiscoverLogo from "./assets/card_credit_discover_logo.png"
+import CartLogo from "./assets/cart_shopping_icon.png"
 
 
 const Checkout = () => {
