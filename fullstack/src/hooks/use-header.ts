@@ -64,7 +64,7 @@ export const useHeader = () => {
   }
 
   const handleDashboardClicked = () => {
-    router.push('/seller-dashboard');
+    router.push('/sellerDashboard');
   }
 
   return {
