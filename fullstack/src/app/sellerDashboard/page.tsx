@@ -203,7 +203,7 @@ export default function SellerDashboard() {
             </span>
             <Select
               value={categoryToSort}
-              onValueChange={(v) => setCategoryToSort(v as "date" | "customer" | "total")}
+              onValueChange={(v: string) => setCategoryToSort(v as "date" | "customer" | "total")}
             >
               <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder="Sort By" />
@@ -253,8 +253,7 @@ export default function SellerDashboard() {
                   <span className="text-sm text-gray-400">Status:</span>
                   <Select
                     value={order.status}
-                    onValueChange={(v) => handleStatusChange(order, v)}
-                  >
+                    onValueChange={(v: string) => handleStatusChange(order, v)}                  >
                     <SelectTrigger className="w-[120px]">
                       <SelectValue placeholder="Change status" />
                     </SelectTrigger>
