@@ -59,6 +59,22 @@ const SearcComponent = () => {
         setProducts(sorted);
     }
 
+    function hideOutOfStock() {
+
+        // console.log('fugg', products)
+
+        var inStock = [];
+        for (let product of products ? products : []) {
+            if (product.quantity > 0) {
+                inStock.push(product);
+            }
+        }
+
+        // let newProducts = products?.filter((product) => product.quantity > 0)
+
+        setProducts(inStock);
+    }
+
     return (
         <div>
             <div className="px-4 py-1 border-b border-gray-800 flex justify-end">
@@ -67,7 +83,7 @@ const SearcComponent = () => {
            <DropdownMenuContent className="dark">
              <DropdownMenuItem onClick={() => sortPrice()}>Price: Low to High</DropdownMenuItem>
              <DropdownMenuItem onClick={() => sortPrice(true)}>Price: High to Low</DropdownMenuItem>
-             <DropdownMenuItem>In Stock</DropdownMenuItem>
+             <DropdownMenuItem onClick={() => hideOutOfStock()}>In Stock</DropdownMenuItem>
            </DropdownMenuContent>
          </DropdownMenu>
        </div>
