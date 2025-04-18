@@ -13,6 +13,7 @@ import Image from "next/image";
 import { CartItem } from "@/app/productPage/[collectionName]/[id]/page";
 import { toast } from "@/hooks/use-toast";
 import { createOrderInDatabase } from "@/lib/firebase/order";
+import { useRouter } from "nextjs-toploader/app";
 
 interface CartProduct {
     name: string,
@@ -20,10 +21,9 @@ interface CartProduct {
     price: number,
     quantity: number
   }
-
 export function CartSheet({ ...rest }: DialogProps){
     const [cart, setCart] = useState<CartProduct[]>([]);
-
+    const router = useRouter();
     useEffect(() => {
         if (!rest.open) return;
         const currentCart = localStorage.getItem("cartItems");
@@ -111,6 +111,7 @@ export function CartSheet({ ...rest }: DialogProps){
         const currentCart = localStorage.getItem("cartItems");
         const cartItems = currentCart ? JSON.parse(decodeURIComponent(currentCart)) : [];
         createOrderInDatabase(cartItems);
+        router.push("/checkout");
     }
 
     return (
@@ -146,7 +147,7 @@ export function CartSheet({ ...rest }: DialogProps){
                         ))}
                     </div>
                     <div className="flex justify-center">
-                        <Button className="dark w-full" onClick={handleCheckoutClicked}><ShoppingBasket />Checkout</Button>
+                        <Button className="dark w-full" onClick={handleCheckoutClicked }><ShoppingBasket />Checkout</Button>
                     </div>
                 </div>
             </SheetContent>
