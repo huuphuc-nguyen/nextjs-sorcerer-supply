@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useParams } from "next/navigation";
 import router from "next/router";
 import { ProductCard } from "@/components/ProductCard/product-card";
+import { getAllOrdersFromDatabase } from "@/lib/firebase/order";
 
 type Product = {
     name: string;
