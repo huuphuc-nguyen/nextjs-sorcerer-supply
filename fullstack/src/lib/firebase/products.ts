@@ -7,8 +7,11 @@ interface Product {
     id: string,
     imageSrc: string,
     name: string,
-    price: number
-    collectionName: string
+    price: number,
+    collectionName: string,
+    description: string,
+    inStock: boolean,
+    quantity: number,
 };
 
 async function searchProducts(searchTerm: string): Promise<Product[]> {
@@ -26,7 +29,10 @@ async function searchProducts(searchTerm: string): Promise<Product[]> {
                         imageSrc: doc.data().imageSrc,
                         name: doc.data().name,
                         price: doc.data().price,
-                        collectionName: doc.data().collectionName
+                        collectionName: doc.data().collectionName,
+                        description: doc.data().description,
+                        inStock: doc.data().inStock,
+                        quantity: doc.data().quantity,
                     });
                 }
             });
@@ -47,7 +53,10 @@ async function getProducts(): Promise<Product[]> {
         imageSrc: doc.data().imageSrc,
         name: doc.data().name,
         price: doc.data().price,
-        collectionName: doc.data().collectionName
+        collectionName: doc.data().collectionName,
+        description: doc.data().description,
+        inStock: doc.data().inStock,
+        quantity: doc.data().quantity,
     }));
 }
 
