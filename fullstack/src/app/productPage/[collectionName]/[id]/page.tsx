@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useParams } from "next/navigation";
 import { updateProductQuantity } from "@/lib/firebase/products";
-import { get } from "http";
 
 interface CartItem {
   productID?: string;
