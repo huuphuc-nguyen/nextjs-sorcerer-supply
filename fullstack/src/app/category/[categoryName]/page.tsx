@@ -34,7 +34,8 @@ const CategoryPage = () => {
           name: product.name,
           price: product.price,
           imageSrc: product.imageSrc,
-          collectionName: product.collectionName || collection, // Add collectionName if missing
+          collectionName: product.collectionName || collection,
+          
         }));
 
         setProducts(mappedProducts);
