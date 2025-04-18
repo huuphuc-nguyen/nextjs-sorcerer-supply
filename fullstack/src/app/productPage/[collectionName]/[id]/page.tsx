@@ -101,7 +101,11 @@ export default function ProductPage() {
                   {productDocument.data()?.description}
                 </p>
               </div>
-
+              <div className=" p-4 rounded shadow-sm">
+                <p className="text-md ">
+                  {(productDocument.data()?.quantity > 0) ? "In stock: " + productDocument.data()?.quantity : "Out of stock."}
+                </p>
+              </div>
               {/* Name, Price, Button Section */}
               <div className="flex flex-col justify-end">
                 <p className="text-2xl font-bold">{productDocument.data()?.name}</p>
