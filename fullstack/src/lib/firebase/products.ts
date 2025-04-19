@@ -1,4 +1,6 @@
 import { db } from '@/lib/firebase/config'
+import { addDoc } from 'firebase/firestore'
+import { deleteDoc } from 'firebase/firestore'
 import { collection, DocumentData, getDocs, QueryDocumentSnapshot, query, limit, setDoc, doc } from 'firebase/firestore'
 
 const collectionNames = ["wands", "spellBooks", "staffs", "scrolls", "magicItems", "ingredients", "cursedItems", "creatures"];
@@ -127,8 +129,36 @@ async function updateProductPrice(collectionName: string,id: string,price: numbe
       console.error('Error updating product description:', error)
     }
   }
+   async function addProductToDatabase(
+    category: string,
+    data: {
+      name: string;
+      price: number;
+      quantity: number;
+      description: string;
+      imageSrc: string;
+    }
+  ) {
+    const colRef = collection(db, category);
+    await addDoc(colRef, {
+      name: data.name,
+      price: data.price,
+      quantity: data.quantity,
+      description: data.description,
+      imageSrc: data.imageSrc,
+      categoryName: category,          
+      inStock: data.quantity > 0,      
+    });
+  }
+   async function deleteProductFromDatabase(
+    category: string,
+    id: string
+  ) {
+    const docRef = doc(db, category, id);
+    await deleteDoc(docRef);
+  }
 
 export { getProductDocuments, getProducts, searchProducts, updateProductQuantity,
-     updateProductPrice, updateProductName, updateProductDescription };
+     updateProductPrice, updateProductName, updateProductDescription, addProductToDatabase,deleteProductFromDatabase };
 
 export type { Product };

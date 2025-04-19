@@ -7,13 +7,15 @@ import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useParams } from "next/navigation";
 import { Input } from "postcss";
-import { updateProductQuantity,updateProductName,updateProductPrice,updateProductDescription } from "@/lib/firebase/products";
+import { updateProductQuantity,updateProductName,updateProductPrice,updateProductDescription,deleteProductFromDatabase } from "@/lib/firebase/products";
 import { wrap } from "module";
+import { useRouter } from "next/navigation";
 
 
 
 
 export default function modifyItems() {
+  const router = useRouter();
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [productDocument, setProductDocument] =
     useState<DocumentSnapshot<DocumentData> | null>(null);
@@ -25,6 +27,20 @@ export default function modifyItems() {
   const [description, setDescription] = useState<string>(
     productDocument?.data()?.description || ""
   )
+  const handleDelete = async () => {
+       if (!window.confirm("Are you sure you want to delete this product?")) return;
+       try {
+         await deleteProductFromDatabase(
+           collectionName!.toString(),
+           id!.toString()
+         );
+         toast({ title: "Deleted", description: "Product removed.", variant: "default" });
+         router.push("/sellerDashboard");
+       } catch (e) {
+         console.error(e);
+         toast({ title: "Error", description: "Could not delete.", variant: "destructive" });
+       }
+     };
 
   useEffect(() => {
     if (id && collectionName) {
@@ -41,7 +57,7 @@ export default function modifyItems() {
         variant: "destructive",
         description: "Product not found.",
       });
-      window.location.href = "/"; // Redirect to products page
+      window.location.href = "/"; 
     }
   }, [id, collectionName, toast]);
 
@@ -196,6 +212,16 @@ export default function modifyItems() {
                         className="bg-black text-white p-2 rounded w-24"
                       />
                     </p>
+                  </div>
+                  {/* ← Add your Delete button here */}
+                  <div className="w-full flex justify-center mt-4">
+                    <button
+                      onClick={handleDelete}
+                      style={{ width: "50%", height: "50px",marginTop: "10%" }}
+                      className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                    >
+                      Delete Product
+                    </button>
                   </div>
             </div>
           </>

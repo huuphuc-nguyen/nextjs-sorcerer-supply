@@ -174,7 +174,16 @@ export default function SellerDashboard() {
           ))}
         </div>
       )}
-
+        {/* Add Product Button */}
+        <div className="flex justify-end mb-6">
+          <button
+            onClick={() => router.push("/addItems")}
+            style={{ marginRight: "30px", marginBottom: "30px",marginTop: "30px" , height: "75x" , width: "250px"}}
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200"
+          >
+            Add Item
+          </button>
+        </div>
       {/* Orders */}
       <div className="flex justify-between items-center mt-6">
         <h2 className="text-md md:text-lg font-semibold">Order History</h2>
