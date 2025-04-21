@@ -3,15 +3,6 @@
 import { useEffect, useState, Suspense } from "react";
 import { ProductCard } from "@/components/ProductCard/product-card";
 import { LoadingSpinner } from "@/components/ui/spinner";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { Product, searchProducts } from "../../lib/firebase/products";
 import { useSearchParams } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
@@ -120,7 +111,7 @@ const SearcComponent = () => {
           filteredProducts?.length > 0 && (
             <div className="flex flex-col gap-4">
               <p>Products</p>
-              <div className="flex flex-wrap gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-10 place-items-center">
                 {filteredProducts?.map((product) => {
                   return (
                     <Link
@@ -137,30 +128,6 @@ const SearcComponent = () => {
                   );
                 })}
               </div>
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious href="#" />
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink href="#">1</PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink href="#" isActive>
-                      2
-                    </PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink href="#">3</PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationEllipsis />
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationNext href="#" />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
             </div>
           )}
       </div>

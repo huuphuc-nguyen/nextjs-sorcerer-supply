@@ -22,6 +22,7 @@ import { ListFilter } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard/product-card";
 import Link from "next/link";
+import { toast } from "@/hooks/use-toast";
 
 type Product = {
   name: string;
@@ -48,14 +49,27 @@ export default function SellerDashboard() {
     "date" | "customer" | "total"
   >("date");
 
+
+  const fetchOrders = async () => {
+    try {
+      const orders = await getAllOrdersFromDatabase();
+      setFilteredOrders(orders);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
+
   // Fetch orders once
   useEffect(() => {
-    getAllOrdersFromDatabase()
-      .then((o) => {
-        setFilteredOrders(o);
-      })
-      .catch(console.error)
-      .finally(() => setOrdersLoading(false));
+    setOrdersLoading(true);
+    fetchOrders()
+      .then(() => setOrdersLoading(false))
+      .catch((error) => {
+        console.error(error);
+        setOrdersLoading(false);
+      });
   }, []);
 
   // Sort/filter whenever sortBy or categoryToSort changes
@@ -114,8 +128,25 @@ export default function SellerDashboard() {
   }, []);
 
   const handleStatusChange = async (order: AdminOrder, status: string) => {
-    await updateOrderStatus(order.userId, order.id, status);
+    try {
+        await updateOrderStatus(order.userId, order.id, status);
+        toast({
+            title: "Success",
+            variant: "success",
+            description: `Order ${order.id} status updated to ${status}`,
+        })
+    }
+    catch (error) {
+        console.error("Error updating order status:", error);
+        toast({
+            title: "Error",
+            variant: "destructive",
+            description: "Failed to update order status.",
+        });
+     }
+
     // re-fetch orders (or optimistically update local state)
+    fetchOrders();
   };
 
   return (
@@ -234,7 +265,7 @@ export default function SellerDashboard() {
                 <CardTitle className="text-xl font-semibold flex justify-between">
                   <span>Order #{order.id}</span>
                   <span
-                    className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 w-[100px] text-center ease-in-out ${
                       order.status === "pending"
                         ? "bg-yellow-500"
                         : order.status === "complete"

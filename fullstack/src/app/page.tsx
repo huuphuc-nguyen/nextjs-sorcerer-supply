@@ -39,15 +39,16 @@ export default function Home() {
   }, []);
 
   const images = [
-    '/depositphotos_227387246-stock-photo-photo-of-three-witches-with.jpg',
-    '/gettyimages-175543914-612x612.jpg',
-    '/gettyimages-1186887201-612x612.jpg'
+    '/banner_3.png',
+    '/banner_1.png',
+    '/banner_2.png',
+    '/banner_4.png',
   ];
 
   return (
     <div>
       <SiteHeader authenticated={authenticated} setSearchText={setSearchText} onDashboardClicked={handleDashboardClicked} onSearchClicked={handleSearchClicked} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
-      <div className='flex justify-center py-4'>
+      <div className='flex justify-center py-4 overflow-y-auto'>
         <Carousel className='w-full max-w-xl' id="hero-carousel" opts={{ loop: true }}>
           <CarouselContent>
             {images.map((value, index) => (
@@ -65,7 +66,8 @@ export default function Home() {
         <p>Featured</p>
         {loading &&
           <div className="flex justify-center">
-            <LoadingSpinner className="w-32 h-32" />
+            <LoadingSpinner className="w-16 aspect-square" />
+            <p>Loading products...</p>
           </div>
         }
         {!loading &&
