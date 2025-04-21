@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { DocumentSnapshot, DocumentData } from "firebase/firestore";
-
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/ui/spinner";
 import { ProductCardFull } from "@/components/ProductCard/product-card";
@@ -15,20 +14,37 @@ import {
   updateProductQuantity,
 } from "@/lib/firebase/products";
 import Link from "next/link";
+import { useRouter } from "nextjs-toploader/app";
+import { deleteProductFromDatabase } from "@/lib/firebase/products";
 
 export default function ModifyItems() {
-  const { toast } = useToast();
-  const { collectionName, id } = useParams();
-
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState<DocumentSnapshot<DocumentData> | null>(
     null
   );
 
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState(0);
+  const router = useRouter();
+  const { toast } = useToast();
+  const { collectionName, id } = useParams();
   const [quantity, setQuantity] = useState(0);
-  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState(0);
+  const [name, setName] = useState(""); 
+  const [description, setDescription] = useState<string>("");
+
+  const handleDelete = async () => {
+       if (!window.confirm("Are you sure you want to delete this product?")) return;
+       try {
+         await deleteProductFromDatabase(
+           collectionName!.toString(),
+           id!.toString()
+         );
+         toast({ title: "Deleted", description: "Product removed.", variant: "success" });
+         router.push("/sellerDashboard");
+       } catch (e) {
+         console.error(e);
+         toast({ title: "Error", description: "Could not delete.", variant: "destructive" });
+       }
+     };
 
   useEffect(() => {
     if (!collectionName || !id) {
@@ -47,6 +63,7 @@ export default function ModifyItems() {
         if (docSnap.exists()) {
           setProduct(docSnap);
           const data = docSnap.data();
+          console.log(data);
           setName(data.name);
           setPrice(data.price);
           setQuantity(data.quantity);
@@ -160,11 +177,23 @@ export default function ModifyItems() {
                       e.preventDefault();
                       handleUpdate("description", description.trim());
                     }
+
                   }}
                   rows={10}
                   className="bg-zinc-900 text-white p-2 rounded w-full resize-y"
                 />
               </FieldBlock>
+               
+                  {/* ← Add your Delete button here */}
+                  <div className="w-full flex justify-center mt-4">
+                    <button
+                      onClick={handleDelete}
+                      style={{ width: "50%", height: "50px",marginTop: "10%" }}
+                      className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                    >
+                      Delete Product
+                    </button>
+                  </div>
             </div>
           </>
         )}

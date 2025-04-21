@@ -9,6 +9,7 @@ import { ProductCard } from "@/components/ProductCard/product-card";
 import { CartSheet } from '@/components/CartSheet/cart-sheet';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useHeader } from "@/hooks/use-header";
+import Image from "next/image";
 
 export default function Home() {
 
@@ -26,7 +27,8 @@ export default function Home() {
     authenticated,
     cartOpen,
     setSearchText,
-    setCartOpen,} = useHeader();
+    setCartOpen,
+  } = useHeader();
 
   useEffect(() => {
     getProducts()
@@ -47,13 +49,21 @@ export default function Home() {
 
   return (
     <div>
-      <SiteHeader authenticated={authenticated} setSearchText={setSearchText} onDashboardClicked={handleDashboardClicked} onSearchClicked={handleSearchClicked} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
+      <SiteHeader authenticated={authenticated} setSearchText={setSearchText} onDashboardClicked={handleDashboardClicked} onSearchClicked={handleSearchClicked} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked} />
       <div className='flex justify-center py-4 overflow-y-auto'>
         <Carousel className='w-full max-w-xl' id="hero-carousel" opts={{ loop: true }}>
           <CarouselContent>
             {images.map((value, index) => (
               <CarouselItem className="flex content-center" key={index}>
-                <img src={value} alt={"???"} />
+                <div className="relative w-full h-60 md:h-72 lg:h-80">
+                  <Image
+                    src={value}
+                    alt={`banner_${index + 1}`}
+                    fill
+                    className="object-cover rounded-lg"
+                    priority
+                  />
+                </div>
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -65,7 +75,7 @@ export default function Home() {
       <div className='flex flex-col gap-4 justify-center w-full px-[10%] py-4'>
         <p>Featured</p>
         {loading &&
-          <div className="flex justify-center">
+          <div className="flex justify-center items-center gap-4">
             <LoadingSpinner className="w-16 aspect-square" />
             <p>Loading products...</p>
           </div>
@@ -73,33 +83,29 @@ export default function Home() {
         {!loading &&
           <Carousel className='w-full'>
             <CarouselContent>
-              {
-                featuredProducts?.map((product) => {
-                  return (
-                    <CarouselItem className='basis-1/5' key={product.id}
-                      onClick={() =>
-                        router.push(`/productPage/${product.collectionName}/${product.id}`)
-                      }
-                      style={{ cursor: "pointer" }}>
-                      <ProductCard
-                        key={product.id}
-                        name={product.name}
-                        price={product.price}
-                        imageSrc={product.imageSrc}
-                      />
-                    </CarouselItem>
-                  );
-                })}
+              {featuredProducts?.map((product) => (
+                <CarouselItem
+                  className='basis-1/5'
+                  key={product.id}
+                  onClick={() => router.push(`/productPage/${product.collectionName}/${product.id}`)}
+                  style={{ cursor: "pointer" }}>
+                  <ProductCard
+                    key={product.id}
+                    name={product.name}
+                    price={product.price}
+                    imageSrc={product.imageSrc}
+                  />
+                </CarouselItem>
+              ))}
             </CarouselContent>
             <CarouselPrevious />
             <CarouselNext />
           </Carousel>
         }
-        {/* {loading && <LoadingSpinner />} */}
-        {error && <p>There was an error loading the products</p>}
+        {error && <p className="text-red-400 text-center">There was an error loading the products</p>}
       </div>
 
-      <CartSheet onOpenChange={setCartOpen} open={cartOpen}/>
+      <CartSheet onOpenChange={setCartOpen} open={cartOpen} />
     </div>
   );
 }

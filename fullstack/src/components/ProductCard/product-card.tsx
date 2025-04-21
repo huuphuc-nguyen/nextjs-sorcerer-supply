@@ -14,6 +14,10 @@ interface ProductCardProps {
     imageSrc?: string
 }
 
+const isValidImageUrl = (url: string) =>
+ /^(https?:\/\/.*|data:image\/(png|jpeg|jpg|gif|webp);base64,[a-zA-Z0-9+/=]+)$/i.test(url.trim())
+
+
 export function ProductCard({
   name = "Mystic Artifact",
   price = 0.0,
@@ -52,12 +56,13 @@ interface ProductCardFullProps {
     price = 0.0,
     imageSrc = "/next.svg",
   }: ProductCardFullProps) {
+    console.log("imageSrc", imageSrc);
     return (
-      <Card className="w-full h-full min-h-[80vh] bg-zinc-900 border border-zinc-700 rounded-2xl overflow-hidden group transition-all duration-500 hover:shadow-lg hover:shadow-indigo-500/30">
+      <Card className="w-full h-fit min-h-[80vh] bg-zinc-900 border border-zinc-700 rounded-2xl overflow-hidden group transition-all duration-500 hover:shadow-lg hover:shadow-indigo-500/30">
         <CardContent className="p-0">
           <div className="relative h-[70vh] w-full overflow-hidden">
             <Image
-              src={imageSrc}
+              src={isValidImageUrl(imageSrc) ? imageSrc : "/next.svg"}
               alt={name}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-500"
