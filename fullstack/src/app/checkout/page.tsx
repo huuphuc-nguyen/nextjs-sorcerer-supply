@@ -1,15 +1,13 @@
-
-
 "use client";
 
 import React from "react";
 import Image from 'next/image';
 import "./style.css";
 
-import UserIcon from './assets/user_icon.png';
-import EmailIcon from "./assets/email_icon.png";
-import AddressIcon from "./assets/address_icon.png";
-import CityIcon from "./assets/city_icon.png";
+import { User } from "lucide-react";
+import { Mail } from "lucide-react";
+import { MapPin } from "lucide-react";
+import { Building2 } from "lucide-react";
 import VisaLogo from "./assets/visa-logo-png-transparent.png"
 import AmexLogo from "./assets/american express_amex_card.png"
 import MasterLogo from "./assets/mastercard_icon.png"
@@ -19,12 +17,12 @@ import CartLogo from "./assets/cart_shopping_icon.png"
 
 const Checkout = () => {
     return (
-        <div className="p-6 max-w-4xl mx-auto">
+        <div className="flex flex-col items-center justify-center w-full max-w-4xl mx-auto py-4">
             <h1 className="text-2xl font-bold mb-4">Checkout</h1>
-            <div className="flex flex-wrap -mx-4">
+            <div className="flex flex-wrap flex-row items-center justify-center gap-4">
                 {/* Cart Summary */}
                 <div className="first">
-                    <div className="bg-white text-black p-6 rounded shadow">
+                    <div className="bg-gray-900 text-white p-6 rounded shadow">
                         <h4 className="text-lg font-semibold flex items-center">
                             Cart{" "}
                             <span className="ml-auto flex items-center">
@@ -77,7 +75,7 @@ const Checkout = () => {
                         <h3 className="text-lg font-semibold">Billing Address</h3>
                         <label className="block mt-2">
                             <span className="flex items-center">
-                                <Image src={UserIcon} alt="user logo" className="invert w-5 h-5 mr-2" /> Full Name
+                                <User className="mr-2"/> Full Name
                             </span>
                             <input
                                 type="text"
@@ -87,7 +85,7 @@ const Checkout = () => {
                         </label>
                         <label className="block mt-2">
                             <span className="flex items-center">
-                                <Image src={EmailIcon} alt="email logo" className="invert w-5 h-5 mr-2" />Email
+                                <Mail className="mr-2"/>Email
                             </span>
                             <input
                                 type="text"
@@ -97,7 +95,7 @@ const Checkout = () => {
                         </label>
                         <label className="block mt-2">
                             <span className="flex items-center">
-                                <Image src={AddressIcon} alt="address logo" className="invert w-4 h-5 mr-2" /> Address
+                                <MapPin className="mr-2" /> Address
                             </span>
                             <input
                                 type="text"
@@ -107,7 +105,7 @@ const Checkout = () => {
                         </label>
                         <label className="block mt-2">
                             <span className="flex items-center">
-                                <Image src={CityIcon} alt="city logo" className="invert w-5 h-5 mr-2" /> City
+                                <Building2 className="mr-2" /> City
                             </span>
                             <input
                                 type="text"

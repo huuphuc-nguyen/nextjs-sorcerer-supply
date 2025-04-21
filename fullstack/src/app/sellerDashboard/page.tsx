@@ -22,6 +22,7 @@ import { ListFilter } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard/product-card";
 import Link from "next/link";
+import { toast } from "@/hooks/use-toast";
 
 type Product = {
   name: string;
@@ -48,14 +49,26 @@ export default function SellerDashboard() {
     "date" | "customer" | "total"
   >("date");
 
+  const fetchOrders = async () => {
+    try {
+      const orders = await getAllOrdersFromDatabase();
+      setFilteredOrders(orders);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
+
   // Fetch orders once
   useEffect(() => {
-    getAllOrdersFromDatabase()
-      .then((o) => {
-        setFilteredOrders(o);
-      })
-      .catch(console.error)
-      .finally(() => setOrdersLoading(false));
+    setOrdersLoading(true);
+    fetchOrders()
+      .then(() => setOrdersLoading(false))
+      .catch((error) => {
+        console.error(error);
+        setOrdersLoading(false);
+      });
   }, []);
 
   // Sort/filter whenever sortBy or categoryToSort changes
@@ -114,8 +127,24 @@ export default function SellerDashboard() {
   }, []);
 
   const handleStatusChange = async (order: AdminOrder, status: string) => {
-    await updateOrderStatus(order.userId, order.id, status);
+    try {
+      await updateOrderStatus(order.userId, order.id, status);
+      toast({
+        title: "Success",
+        variant: "success",
+        description: `Order ${order.id} status updated to ${status}`,
+      });
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      toast({
+        title: "Error",
+        variant: "destructive",
+        description: "Failed to update order status.",
+      });
+    }
+
     // re-fetch orders (or optimistically update local state)
+    fetchOrders();
   };
 
   return (
@@ -152,7 +181,16 @@ export default function SellerDashboard() {
       </div>
 
       {/* Products */}
-      <h2 className="text-lg font-semibold mb-4">Products</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-lg font-semibold mb-4">Products</h2>
+        {/* Add Product Button */}
+          <button
+            onClick={() => router.push("/addItems")}
+            className="bg-green-600 hover:bg-green-700 w-28 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200"
+          >
+            Add Item
+          </button>
+      </div>
       {loading ? (
         <p className="text-gray-400">Loading products...</p>
       ) : (
@@ -174,16 +212,7 @@ export default function SellerDashboard() {
           ))}
         </div>
       )}
-        {/* Add Product Button */}
-        <div className="flex justify-end mb-6">
-          <button
-            onClick={() => router.push("/addItems")}
-            style={{ marginRight: "30px", marginBottom: "30px",marginTop: "30px" , height: "75x" , width: "250px"}}
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200"
-          >
-            Add Item
-          </button>
-        </div>
+
       {/* Orders */}
       <div className="flex justify-between items-center mt-6">
         <h2 className="text-md md:text-lg font-semibold">Order History</h2>
@@ -192,7 +221,10 @@ export default function SellerDashboard() {
             <span className="hidden md:flex items-center font-bold gap-2">
               Order By <ListFilter />
             </span>
-            <Select value={sortBy} onValueChange={(v: "ascending" | "descending") => setSortBy(v)}>
+            <Select
+              value={sortBy}
+              onValueChange={(v: "ascending" | "descending") => setSortBy(v)}
+            >
               <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder="Order By" />
               </SelectTrigger>
@@ -212,7 +244,9 @@ export default function SellerDashboard() {
             </span>
             <Select
               value={categoryToSort}
-              onValueChange={(v: string) => setCategoryToSort(v as "date" | "customer" | "total")}
+              onValueChange={(v: string) =>
+                setCategoryToSort(v as "date" | "customer" | "total")
+              }
             >
               <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder="Sort By" />
@@ -243,7 +277,7 @@ export default function SellerDashboard() {
                 <CardTitle className="text-xl font-semibold flex justify-between">
                   <span>Order #{order.id}</span>
                   <span
-                    className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 w-[100px] text-center ease-in-out ${
                       order.status === "pending"
                         ? "bg-yellow-500"
                         : order.status === "complete"
@@ -262,7 +296,8 @@ export default function SellerDashboard() {
                   <span className="text-sm text-gray-400">Status:</span>
                   <Select
                     value={order.status}
-                    onValueChange={(v: string) => handleStatusChange(order, v)}                  >
+                    onValueChange={(v: string) => handleStatusChange(order, v)}
+                  >
                     <SelectTrigger className="w-[120px]">
                       <SelectValue placeholder="Change status" />
                     </SelectTrigger>

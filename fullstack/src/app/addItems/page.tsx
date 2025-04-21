@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { ProductCardFull } from "@/components/ProductCard/product-card";
  import { addProductToDatabase } from "@/lib/firebase/products"; 
  import placeholderImage from "./assets/placeholderImage.png";
+ import Link from "next/link";
 
 export default function AddItemPage() {
   const router = useRouter();
@@ -52,7 +52,7 @@ export default function AddItemPage() {
             description: description.trim(),
             imageSrc: imageSrc.trim(),
           });
-          toast({ title: "Success", description: "Product added!" });
+          toast({ title: "Success", description: "Product added!", variant: "success" });
           router.push("/sellerDashboard");
         } catch (e) {
           console.error(e);
@@ -65,18 +65,18 @@ export default function AddItemPage() {
       };
 
   return (
-    <div className="bg-black text-white min-h-screen px-6 py-4">
+    <div className="bg-black text-white px-6 py-4 min-h-fit">
       {/* reuse your nav */}
       <nav className="flex justify-between items-center border-b border-gray-800 pb-4 mb-6">
         <h1 className="text-2xl font-bold">Sorceres Supply</h1>
         <div className="flex gap-4 text-sm font-medium">
-          <a href="/sellerDashboard" className="hover:underline">Dashboard</a>
-          <a href="#" className="hover:underline">Discounts</a>
-          <a href="/" className="hover:underline">Back to Store</a>
+          <Link href="/sellerDashboard" className="hover:underline">Dashboard</Link>
+          <Link href="#" className="hover:underline">Discounts</Link>
+          <Link href="/" className="hover:underline">Back to Store</Link>
         </div>
       </nav>
 
-      <div className="max-h-[80vh] p-[2rem] flex justify-center gap-20">
+      <div className="p-[2rem] flex justify-center gap-20">
         {/* Left: Preview Card */}
         <div className="w-full md:w-1/2">
           <ProductCardFull
@@ -94,7 +94,7 @@ export default function AddItemPage() {
             <select
               value={collectionName}
               onChange={e => setCollectionName(e.target.value)}
-              className="bg-black text-white p-2 rounded w-full"
+              className="bg-black text-white p-2 rounded w-full border border-zinc-600"
             >
               {["wands","spellBooks","staffs","scrolls","magicItems","ingredients","cursedItems","creatures"]
                 .map(cat => (
@@ -109,7 +109,7 @@ export default function AddItemPage() {
               value={imageSrc}
               onChange={e => setImageSrc(e.target.value)}
               placeholder="https://..."
-              className="bg-black text-white p-2 rounded w-full"
+              className="bg-black text-white p-2 rounded w-full border border-zinc-600"
             />
           </div>
 
@@ -119,7 +119,7 @@ export default function AddItemPage() {
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="Product name"
-              className="bg-black text-white p-2 rounded w-full"
+              className="bg-black text-white p-2 rounded w-full border border-zinc-600"
             />
           </div>
 
@@ -131,7 +131,7 @@ export default function AddItemPage() {
                 value={price}
                 onChange={e => setPrice(e.target.value === "" ? "" : parseFloat(e.target.value))}
                 placeholder="0.00"
-                className="bg-black text-white p-2 rounded w-full"
+                className="bg-black text-white p-2 rounded w-full border border-zinc-600"
               />
             </div>
             <div className="flex-1">
@@ -141,7 +141,7 @@ export default function AddItemPage() {
                 value={quantity}
                 onChange={e => setQuantity(e.target.value === "" ? "" : parseInt(e.target.value))}
                 placeholder="0"
-                className="bg-black text-white p-2 rounded w-full"
+                className="bg-black text-white p-2 rounded w-full border border-zinc-600"
               />
             </div>
           </div>
@@ -153,7 +153,7 @@ export default function AddItemPage() {
               onChange={e => setDescription(e.target.value)}
               placeholder="Enter product description…"
               rows={4}
-              className="bg-black text-white p-2 rounded w-full resize-y"
+              className="bg-black text-white p-2 rounded w-full resize-y border border-zinc-600"
             />
           </div>
 
