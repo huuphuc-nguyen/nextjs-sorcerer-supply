@@ -38,13 +38,33 @@ interface Product {
 async function searchProducts(searchTerm: string): Promise<Product[]> {
   const searchResults: Product[] = [];
 
+  // Get the uppercase search term
+  const searchTermUpper = searchTerm.toUpperCase();
+
   try {
     for (const col of collectionNames) {
       const colRef = collection(db, col);
       const q = query(colRef);
       const querySnapshot = await getDocs(q);
+
       querySnapshot.forEach((doc) => {
-        if (doc.data().name.toUpperCase().includes(searchTerm.toUpperCase())) {
+        // Check if the product name contains the search term
+        const nameContains = doc
+          .data()
+          .name.toUpperCase()
+          .includes(searchTermUpper);
+
+        // Check if the description contains the search term
+        const descSplit = doc
+          .data()
+          .description.split(" ")
+          .map((part: string) => part.toUpperCase());
+        const descContains = descSplit.some((part: string | string[]) =>
+          part.includes(searchTermUpper)
+        );
+
+        // If the name or desc contains the search term, add it to the results
+        if (nameContains || descContains) {
           searchResults.push({
             id: doc.id,
             imageSrc: doc.data().imageSrc,
@@ -58,7 +78,6 @@ async function searchProducts(searchTerm: string): Promise<Product[]> {
         }
       });
     }
-
     return searchResults;
   } catch (err) {
     console.error("Error searching for documents:", err);
