@@ -19,7 +19,23 @@ export const metadata: Metadata = {
   title: "Sorcerer's Supply",
   description: "Wizard focused ecommerce site",
   icons: {
-    icon: '/wand-sparkles.svg', 
+    icon: '/favicon.ico', 
+  },
+  openGraph: {
+    title: "Sorcerer's Supply",
+    description: "Wizard focused ecommerce site",
+    url: "https://sorcerersupply.store",
+    siteName: "Sorcerer's Supply Store",
+    images: [
+      {
+        url: "/banner_3.png",
+        width: 1200,
+        height: 630,
+        alt: "Sorcerer's Supply - Magical Marketplace",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
   },
 };
 
