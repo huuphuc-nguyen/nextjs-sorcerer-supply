@@ -11,12 +11,12 @@ export type Order = {
     status: string;
     createdAt: string;
     products: CartItem[];
+    total: number;
   };
 
 export type AdminOrder = Order & {
     customerFullname: string;
     customerEmail: string;
-    total: number;
     userId: string;
 }
 
@@ -26,7 +26,7 @@ function generateOrderId(): string {
   return `order-${timestamp}-${randomNum}`;
 }
 
-export const createOrderInDatabase = async (products: CartItem[] ) => {
+export const createOrderInDatabase = async (products: CartItem[], totalPayment: number ) => {
     
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -41,6 +41,7 @@ export const createOrderInDatabase = async (products: CartItem[] ) => {
                     products,
                     createdAt: new Date().toISOString(),
                     status: "pending",
+                    total: totalPayment,
                   }),
                 });
         
@@ -106,20 +107,10 @@ export const getAllOrdersFromDatabase = async (): Promise<AdminOrder[]> => {
 
             if (userOrders && Array.isArray(userOrders)) {
                 userOrders.forEach((order) => {
-                    
-                    let userTotal = 0;
-
-                    order.products.forEach(product => {
-                        if (product.productData?.price && product.quantity) {
-                        userTotal += product.productData?.price * product?.quantity;
-                      }
-                    })
-
                     const orderWithUserInfo: AdminOrder = {
                         ...order,
                         customerFullname: userFullName,
                         customerEmail: userEmail,
-                        total: userTotal,
                         userId: userId,
                     }
                     allOrders.push(orderWithUserInfo); // You can customize this part if you want to store more information about each order

@@ -74,7 +74,7 @@ export default function ModifyItems() {
     );
   }, [collectionName, id, toast]);
 
-  const handleUpdate = async (field: string, value: any) => {
+  const handleUpdate = async (field: string, value: string | number) => {
     if (!collectionName || !id) return;
 
     const updateMap: Record<string, Function> = {

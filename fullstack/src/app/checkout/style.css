@@ -61,13 +61,13 @@ label{
 .first {
     width: 300px;
     float: left;
-    height: 250px;
+    height: fit-content;
     
 }
 .second {
     width: 300px;
     float: left;
-    height: 230px;
+    height: fit-content;
     padding-left: 20;
 }
   

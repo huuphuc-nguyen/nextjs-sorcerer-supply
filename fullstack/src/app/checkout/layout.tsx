@@ -5,7 +5,7 @@ import { SiteHeader } from "@/components/SiteHeader/site-header";
 import { useHeader } from "@/hooks/use-header";
 import { CartSheet } from "@/components/CartSheet/cart-sheet";
 
-const AccountLayout = ({ children }: { children: React.ReactNode }) => {
+const CheckoutLayout = ({ children }: { children: React.ReactNode }) => {
 
   const {
     handleAuthClicked,
@@ -24,9 +24,7 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
       <SiteHeader authenticated={authenticated} setSearchText={setSearchText} onDashboardClicked={handleDashboardClicked} onSearchClicked={handleSearchClicked} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked}/>
 
       {/* Main Content */}
-      <main className="flex-grow p-8">
-          {children}
-      </main>
+      <main className="flex-grow p-8">{children}</main>
 
       {/* Cart Sheet*/}
       <CartSheet onOpenChange={setCartOpen} open={cartOpen} />
@@ -34,4 +32,4 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default AccountLayout;
+export default CheckoutLayout;

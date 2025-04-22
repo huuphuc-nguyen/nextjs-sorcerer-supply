@@ -19,10 +19,12 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ListFilter } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { ProductCard } from "@/components/ProductCard/product-card";
 import Link from "next/link";
 import { toast } from "@/hooks/use-toast";
+import { auth } from "@/lib/firebase/config";
+import { getUserFromDatabase } from "@/lib/firebase/users";
 
 type Product = {
   name: string;
@@ -49,10 +51,14 @@ export default function SellerDashboard() {
     "date" | "customer" | "total"
   >("date");
 
+// User's data
+const [fullName, setFullName] = useState<string>("New Customer");
+const [avatar, setAvatar] = useState<string>("/avatar_placeholder.png");
+
   const fetchOrders = async () => {
     try {
       const orders = await getAllOrdersFromDatabase();
-      setFilteredOrders(orders);
+      setFilteredOrders(orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
     } catch (error) {
       console.error(error);
     } finally {
@@ -60,7 +66,26 @@ export default function SellerDashboard() {
     }
   };
 
-  // Fetch orders once
+  // Fetch users when page is loaded
+  useEffect (() => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        setFullName(user.displayName || "New Customer");
+        if (user.photoURL) {
+          setAvatar(user.photoURL);
+        }
+        getUserFromDatabase(user.uid)
+          .then((user) => {
+            setFullName(user?.fullname || "New Customer");
+            console.log("User:", user);
+          })
+      } else {
+        router.push("/login");
+      }
+    });
+  }, []);
+
+  // Fetch orders when page is loaded
   useEffect(() => {
     setOrdersLoading(true);
     fetchOrders()
@@ -108,7 +133,7 @@ export default function SellerDashboard() {
         for (const cat of categories) {
           const items = await getCategory(cat);
           all.push(
-            ...items.map((p: any) => ({
+            ...items.map((p: { id: string; name: string; price: number; imageSrc?: string }) => ({
               id: p.id,
               name: p.name,
               price: p.price,
@@ -166,17 +191,17 @@ export default function SellerDashboard() {
       </nav>
 
       {/* Profile */}
-      <div className="bg-gray-900 p-6 rounded-xl shadow-md flex items-center mb-6">
+      <div className="bg-zinc-900 p-6 rounded-xl shadow-md flex items-center mb-6">
         <Image
-          src="/profile.jpg"
+          src={avatar}
           alt="Seller Profile"
           width={80}
           height={80}
           className="rounded-full border-2 border-gray-700"
         />
         <div className="ml-4">
-          <h2 className="text-xl font-bold">Profile Name</h2>
-          <p className="text-gray-400">Home & Furniture Seller</p>
+          <h2 className="text-xl font-bold">{fullName}</h2>
+          <p className="text-gray-400">Enchanted Goods Seller</p>
         </div>
       </div>
 
@@ -194,7 +219,7 @@ export default function SellerDashboard() {
       {loading ? (
         <p className="text-gray-400">Loading products...</p>
       ) : (
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-10 place-items-center">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-10 place-items-center">
           {products.map((p) => (
             <div
               key={p.id}

@@ -56,7 +56,6 @@ interface ProductCardFullProps {
     price = 0.0,
     imageSrc = "/next.svg",
   }: ProductCardFullProps) {
-    console.log("imageSrc", imageSrc);
     return (
       <Card className="w-full h-fit min-h-[80vh] bg-zinc-900 border border-zinc-700 rounded-2xl overflow-hidden group transition-all duration-500 hover:shadow-lg hover:shadow-indigo-500/30">
         <CardContent className="p-0">

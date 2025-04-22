@@ -85,7 +85,7 @@ export default function Home() {
             <CarouselContent>
               {featuredProducts?.map((product) => (
                 <CarouselItem
-                  className='basis-1/5'
+                  className='basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5'
                   key={product.id}
                   onClick={() => router.push(`/productPage/${product.collectionName}/${product.id}`)}
                   style={{ cursor: "pointer" }}>
@@ -105,7 +105,7 @@ export default function Home() {
         {error && <p className="text-red-400 text-center">There was an error loading the products</p>}
       </div>
 
-      <CartSheet onOpenChange={setCartOpen} open={cartOpen} />
+        <CartSheet onOpenChange={setCartOpen} open={cartOpen} />
     </div>
   );
 }
