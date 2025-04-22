@@ -1,37 +1,37 @@
-import { auth } from '@/lib/firebase/config';
+import { auth } from "@/lib/firebase/config";
 import { getAuth, signOut } from "firebase/auth";
-import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'nextjs-toploader/app';
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "nextjs-toploader/app";
 import { useEffect, useState } from "react";
 
 export const useHeader = () => {
-
   const { toast } = useToast();
   const router = useRouter();
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
   const [cartOpen, setCartOpen] = useState(false);
-  const [searchText, setSearchText] = useState<string>('');
+  const [searchText, setSearchText] = useState<string>("");
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
       setAuthenticated(user ? true : false);
     });
-    return () => { unsubscribe() }
-  }, [])
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const handleSearchClicked = async () => {
-    router.push(`/search?q=${encodeURIComponent(searchText)}`)
-  }
+    router.push(`/search?q=${encodeURIComponent(searchText)}`);
+  };
 
   const handleAuthClicked = async () => {
     const auth = getAuth();
 
     if (!authenticated) {
-      router.push('/login');
+      router.push("/login");
 
       return;
-    }
-    else {
+    } else {
       try {
         await signOut(auth);
 
@@ -41,9 +41,8 @@ export const useHeader = () => {
           description: "You have been signed out.",
         });
 
-        router.push('/');
-      }
-      catch (error) {
+        router.push("/");
+      } catch (error) {
         console.error(error);
 
         toast({
@@ -60,12 +59,12 @@ export const useHeader = () => {
   };
 
   const handleAccountClicked = () => {
-    router.push('/account');
-  }
+    router.push("/account");
+  };
 
   const handleDashboardClicked = () => {
-    router.push('/sellerDashboard');
-  }
+    router.push("/sellerDashboard");
+  };
 
   return {
     handleDashboardClicked,
@@ -78,5 +77,5 @@ export const useHeader = () => {
     searchText,
     setSearchText,
     setCartOpen,
-  }
+  };
 };

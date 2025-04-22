@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { WandSparkles } from 'lucide-react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase/config'
-import { useToast } from "@/hooks/use-toast"
-import { LoginData } from '@/types/authentication';
-import { LoginForm } from '@/components/LoginForm/login-form'
-import background from '../../assets/background/login.png';
+import { WandSparkles } from "lucide-react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase/config";
+import { useToast } from "@/hooks/use-toast";
+import { LoginData } from "@/types/authentication";
+import { LoginForm } from "@/components/LoginForm/login-form";
+import background from "../../assets/background/login.png";
 
 export default function Login() {
   // Toaster
@@ -18,36 +18,37 @@ export default function Login() {
   const router = useRouter();
 
   const handleLoginSubmit = async (data: LoginData) => {
-
     try {
       const { email, password } = data;
-  
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-  
+
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+
       toast({
         title: "Login successful",
         variant: "success",
         description: "Welcome back!",
       });
-  
+
       const token = await userCredential.user.getIdToken();
-  
+
       // Store token in cookies
       document.cookie = `token=${token}; path=/;`;
 
-      const redirectPath = sessionStorage.getItem("redirectAfterLogin") 
-      sessionStorage.removeItem("redirectAfterLogin")
+      const redirectPath = sessionStorage.getItem("redirectAfterLogin");
+      sessionStorage.removeItem("redirectAfterLogin");
 
-      if (redirectPath){
-        router.push(redirectPath)
+      if (redirectPath) {
+        router.push(redirectPath);
+      } else {
+        router.push("/");
       }
-      else{
-        router.push('/');
-      }
-
     } catch (error) {
       console.error(error);
-  
+
       toast({
         title: "Login failed",
         variant: "destructive",
@@ -58,16 +59,24 @@ export default function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center gap-5 h-screen overflow-y-auto w-full">
-      
       {/* Background image */}
-      <Image src={background} alt='background' fill={true} className='fixed -z-20 inset-0'/>
-      <div className='fixed w-full h-full backdrop-blur-md -z-10'></div>
-      
+      <Image
+        src={background}
+        alt="background"
+        fill={true}
+        className="fixed -z-20 inset-0"
+      />
+      <div className="fixed w-full h-full backdrop-blur-md -z-10"></div>
+
       {/* Header */}
-      <h1 className='text-3xl font-semibold text-center text-white'> <WandSparkles className='inline mx-2'/>Sorcerer&apos;s Supply</h1>
+      <h1 className="text-3xl font-semibold text-center text-white">
+        {" "}
+        <WandSparkles className="inline mx-2" />
+        Sorcerer&apos;s Supply
+      </h1>
 
       {/* Login form */}
-      <LoginForm onLoginSubmit={handleLoginSubmit}/>
+      <LoginForm onLoginSubmit={handleLoginSubmit} />
     </div>
-  )
+  );
 }

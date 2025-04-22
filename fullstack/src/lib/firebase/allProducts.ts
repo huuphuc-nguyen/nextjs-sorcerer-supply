@@ -1,9 +1,25 @@
-import { db } from '@/lib/firebase/config';
-import { collection, DocumentData, getDocs, QueryDocumentSnapshot } from 'firebase/firestore';
+import { db } from "@/lib/firebase/config";
+import {
+  collection,
+  DocumentData,
+  getDocs,
+  QueryDocumentSnapshot,
+} from "firebase/firestore";
 
-const collectionNames = ["wands", "spellBooks", "staffs", "scrolls", "magicItems", "ingredients", "cursedItems", "creatures"];
+const collectionNames = [
+  "wands",
+  "spellBooks",
+  "staffs",
+  "scrolls",
+  "magicItems",
+  "ingredients",
+  "cursedItems",
+  "creatures",
+];
 
-async function getAllProductDocuments(): Promise<QueryDocumentSnapshot<DocumentData>[]> {
+async function getAllProductDocuments(): Promise<
+  QueryDocumentSnapshot<DocumentData>[]
+> {
   try {
     let allDocs: QueryDocumentSnapshot<DocumentData>[] = [];
 

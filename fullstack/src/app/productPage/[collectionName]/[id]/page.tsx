@@ -25,7 +25,7 @@ export default function ProductPage() {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   // use trigger to force re-render to update sotck quantity when cart changes
-  const {trigger} = useCartContext();
+  const { trigger } = useCartContext();
 
   useEffect(() => {
     // Get Firebase authentication
@@ -36,7 +36,7 @@ export default function ProductPage() {
         (docSnap) => {
           setProductDocument(docSnap);
           setLoadingProducts(false);
-        }
+        },
       );
     } else {
       toast({
@@ -48,21 +48,25 @@ export default function ProductPage() {
     }
   }, [id, collectionName, toast, trigger]);
 
-  const handleOutOfStockClicked = () => {      
+  const handleOutOfStockClicked = () => {
     toast({
-    title: "Out of Stock",
-    variant: "destructive",
-    description: "This item is currently out of stock.",
-  });}
+      title: "Out of Stock",
+      variant: "destructive",
+      description: "This item is currently out of stock.",
+    });
+  };
 
   const handleAddToCartClicked = async () => {
     if (isAddingToCart) return; // 🔒 Prevent spam click
     setIsAddingToCart(true);
-  
+
     try {
-      const latestDoc = await getProductDocument(collectionName?.toString() ?? "", id?.toString() ?? "");
+      const latestDoc = await getProductDocument(
+        collectionName?.toString() ?? "",
+        id?.toString() ?? "",
+      );
       const currentQty = latestDoc.data()?.quantity;
-  
+
       if (!latestDoc.data()?.inStock || currentQty <= 0) {
         toast({
           title: "Out of Stock",
@@ -71,49 +75,52 @@ export default function ProductPage() {
         });
         return;
       }
-  
+
       await updateProductQuantity(
         collectionName?.toString() ?? "",
         id?.toString() ?? "",
-        currentQty - 1
+        currentQty - 1,
       );
-  
+
       // Proceed to update localStorage here...
       // Use latestDoc instead of stale productDocument
       const items = localStorage.getItem("cartItems");
       const cartItems = items ? JSON.parse(decodeURIComponent(items)) : [];
-  
+
       const newItem: CartItem = {
         productID: latestDoc.id,
         productData: latestDoc.data(),
         quantity: 1,
       };
-  
+
       const existingItemIndex = cartItems.findIndex(
-        (item: CartItem) => item.productID === newItem.productID
+        (item: CartItem) => item.productID === newItem.productID,
       );
-  
+
       if (existingItemIndex !== -1) {
         cartItems[existingItemIndex].quantity += 1;
       } else {
         cartItems.push(newItem);
       }
-  
-      localStorage.setItem("cartItems", encodeURIComponent(JSON.stringify(cartItems)));
-  
+
+      localStorage.setItem(
+        "cartItems",
+        encodeURIComponent(JSON.stringify(cartItems)),
+      );
+
       toast({
         title: "Item added to cart",
         variant: "success",
         description: `${latestDoc.data()?.name} has been added to your cart.`,
       });
-  
+
       // Refresh product state
-      getProductDocument(collectionName?.toString() ?? "", id?.toString() ?? "").then(
-        (docSnap) => {
+      getProductDocument(
+        collectionName?.toString() ?? "",
+        id?.toString() ?? "",
+      ).then((docSnap) => {
         setProductDocument(docSnap);
-      }
-      );
-  
+      });
     } catch (error) {
       const err = error as Error;
       toast({
@@ -156,7 +163,9 @@ export default function ProductPage() {
               </div>
               <div className=" p-4 rounded shadow-sm">
                 <p className="text-md ">
-                  {(productDocument.data()?.quantity > 0) ? "In stock: " + productDocument.data()?.quantity : "Out of stock."}
+                  {productDocument.data()?.quantity > 0
+                    ? "In stock: " + productDocument.data()?.quantity
+                    : "Out of stock."}
                 </p>
               </div>
               {/* Name, Price, Button Section */}
@@ -175,7 +184,7 @@ export default function ProductPage() {
                   >
                     <span className="relative z-10">
                       {isAddingToCart ? (
-                       <LoadingSpinner className="text-center w-full"/> // Loading spinner
+                        <LoadingSpinner className="text-center w-full" /> // Loading spinner
                       ) : (
                         "Add to Cart"
                       )}
@@ -183,9 +192,10 @@ export default function ProductPage() {
                     <span className="absolute top-0 left-1/2 -translate-x-1/2 h-full w-0 bg-white group-hover:w-full transition-all duration-500"></span>
                   </button>
                 ) : (
-                  <button 
+                  <button
                     className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                    onClick={handleOutOfStockClicked}>
+                    onClick={handleOutOfStockClicked}
+                  >
                     Out of Stock
                   </button>
                 )}

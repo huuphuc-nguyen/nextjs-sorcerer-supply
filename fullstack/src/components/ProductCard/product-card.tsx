@@ -1,22 +1,17 @@
-import {
-    Card,
-    CardContent,
-    CardFooter,
-} from "@/components/ui/card"
-import Image from "next/image"
-
-
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import Image from "next/image";
 
 interface ProductCardProps {
-    key?: string,
-    name?: string,
-    price?: number,
-    imageSrc?: string
+  key?: string;
+  name?: string;
+  price?: number;
+  imageSrc?: string;
 }
 
 const isValidImageUrl = (url: string) =>
- /^(https?:\/\/.*|data:image\/(png|jpeg|jpg|gif|webp);base64,[a-zA-Z0-9+/=]+)$/i.test(url.trim())
-
+  /^(https?:\/\/.*|data:image\/(png|jpeg|jpg|gif|webp);base64,[a-zA-Z0-9+/=]+)$/i.test(
+    url.trim(),
+  );
 
 export function ProductCard({
   name = "Mystic Artifact",
@@ -37,7 +32,9 @@ export function ProductCard({
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-start px-4 py-3">
-        <p className="text-sm md:text-base font-semibold text-white truncate w-full">{name}</p>
+        <p className="text-sm md:text-base font-semibold text-white truncate w-full">
+          {name}
+        </p>
         <p className="text-sm text-emerald-300">${price}</p>
       </CardFooter>
     </Card>
@@ -45,34 +42,36 @@ export function ProductCard({
 }
 
 interface ProductCardFullProps {
-    key?: string;
-    name: string;
-    price: number;
-    imageSrc?: string;
-  }
-  
-  export function ProductCardFull({
-    name = "Mystic Relic",
-    price = 0.0,
-    imageSrc = "/next.svg",
-  }: ProductCardFullProps) {
-    return (
-      <Card className="w-full h-fit min-h-[80vh] bg-zinc-900 border border-zinc-700 rounded-2xl overflow-hidden group transition-all duration-500 hover:shadow-lg hover:shadow-indigo-500/30">
-        <CardContent className="p-0">
-          <div className="relative h-[70vh] w-full overflow-hidden">
-            <Image
-              src={isValidImageUrl(imageSrc) ? imageSrc : "/next.svg"}
-              alt={name}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-              priority
-            />
-          </div>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-1 items-start p-6">
-          <p className="text-2xl font-semibold text-white tracking-wide">{name}</p>
-          <p className="text-indigo-300 text-lg">${price}</p>
-        </CardFooter>
-      </Card>
-    );
-  }
+  key?: string;
+  name: string;
+  price: number;
+  imageSrc?: string;
+}
+
+export function ProductCardFull({
+  name = "Mystic Relic",
+  price = 0.0,
+  imageSrc = "/next.svg",
+}: ProductCardFullProps) {
+  return (
+    <Card className="w-full h-fit min-h-[80vh] bg-zinc-900 border border-zinc-700 rounded-2xl overflow-hidden group transition-all duration-500 hover:shadow-lg hover:shadow-indigo-500/30">
+      <CardContent className="p-0">
+        <div className="relative h-[70vh] w-full overflow-hidden">
+          <Image
+            src={isValidImageUrl(imageSrc) ? imageSrc : "/next.svg"}
+            alt={name}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            priority
+          />
+        </div>
+      </CardContent>
+      <CardFooter className="flex flex-col gap-1 items-start p-6">
+        <p className="text-2xl font-semibold text-white tracking-wide">
+          {name}
+        </p>
+        <p className="text-indigo-300 text-lg">${price}</p>
+      </CardFooter>
+    </Card>
+  );
+}

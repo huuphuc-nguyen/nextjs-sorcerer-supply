@@ -60,7 +60,7 @@ async function searchProducts(searchTerm: string): Promise<Product[]> {
           .description.split(" ")
           .map((part: string) => part.toUpperCase());
         const descContains = descSplit.some((part: string | string[]) =>
-          part.includes(searchTermUpper)
+          part.includes(searchTermUpper),
         );
 
         // If the name or desc contains the search term, add it to the results
@@ -122,7 +122,7 @@ async function getProductDocuments(): Promise<
 async function updateProductQuantity(
   collectionName: string,
   id: string,
-  quantity: number
+  quantity: number,
 ) {
   try {
     const docRef = doc(db, collectionName, id);
@@ -133,7 +133,7 @@ async function updateProductQuantity(
         quantity: quantity < 0 ? 0 : quantity,
         inStock: quantity > 0 ? true : false,
       },
-      { merge: true }
+      { merge: true },
     );
   } catch (error) {
     console.error("Error updating product quantity:", error);
@@ -153,7 +153,7 @@ async function getProductByID(collectionName: string, id: string) {
 async function updateProductPrice(
   collectionName: string,
   id: string,
-  price: number
+  price: number,
 ) {
   try {
     const docRef = doc(db, collectionName, id);
@@ -166,7 +166,7 @@ async function updateProductPrice(
 async function updateProductName(
   collectionName: string,
   id: string,
-  name: string
+  name: string,
 ) {
   try {
     const docRef = doc(db, collectionName, id);
@@ -179,7 +179,7 @@ async function updateProductName(
 async function updateProductDescription(
   collectionName: string,
   id: string,
-  description: string
+  description: string,
 ) {
   try {
     const docRef = doc(db, collectionName, id);
@@ -196,7 +196,7 @@ async function addProductToDatabase(
     quantity: number;
     description: string;
     imageSrc: string;
-  }
+  },
 ) {
   const colRef = collection(db, category);
   await addDoc(colRef, {

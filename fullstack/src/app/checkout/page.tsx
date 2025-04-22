@@ -26,6 +26,13 @@ import { getAuth } from "firebase/auth";
 const auth = getAuth();
 
 const schema = z.object({
+  fullName: z.string().min(1, "Full name is required"),
+  email: z.string().email("Invalid email address"),
+  address: z.string().min(1, "Address is required"),
+  city: z.string().min(1, "City is required"),
+  state: z.string().min(1, "State is required"),
+  zip: z.string().regex(/^\d{5}$/, "Invalid ZIP code"),
+
   cardName: z.string().min(1, "Cardholder name is required"),
   cardNumber: z.string().regex(/^\d{16}$/, "Card number must be 16 digits"),
   expMonth: z
@@ -47,6 +54,7 @@ const Checkout = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<CardFormSchema>({ resolver: zodResolver(schema) });
 
   // load cart items from local storage
@@ -56,7 +64,7 @@ const Checkout = () => {
       setCartItems(JSON.parse(decodeURIComponent(storedCartItems)));
       console.log(
         "Cart items loaded from local storage:",
-        JSON.parse(decodeURIComponent(storedCartItems))
+        JSON.parse(decodeURIComponent(storedCartItems)),
       );
     }
   }, []);
@@ -97,11 +105,19 @@ const Checkout = () => {
       cartItems.reduce(
         (total: number, item: CartItem) =>
           total + (item.productData?.price ?? 0) * (item.quantity ?? 1),
-        0
+        0,
       ) *
         1.0825 -
       discountAmount;
-    createOrderInDatabase(cartItems, totalPayment);
+    const shippingDetails = {
+      fullName: data.fullName,
+      email: data.email,
+      address: data.address,
+      city: data.city,
+      state: data.state,
+      zip: data.zip,
+    };
+    createOrderInDatabase(cartItems, totalPayment, shippingDetails);
     toast({
       title: "Success",
       description: "Order created successfully!",
@@ -115,11 +131,12 @@ const Checkout = () => {
 
     // Clear cart after order creation
     localStorage.removeItem("cartItems");
+    reset();
     setCartItems([]);
     window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -160,7 +177,7 @@ const Checkout = () => {
                     (total, item) =>
                       total +
                       (item.productData?.price ?? 0) * (item.quantity ?? 1),
-                    0
+                    0,
                   )
                   .toFixed(2)}
               </span>
@@ -174,7 +191,7 @@ const Checkout = () => {
                     (total, item) =>
                       total +
                       (item.productData?.price ?? 0) * (item.quantity ?? 1),
-                    0
+                    0,
                   ) * 0.0825
                 ).toFixed(2)}
               </span>
@@ -197,7 +214,7 @@ const Checkout = () => {
                     (total, item) =>
                       total +
                       (item.productData?.price ?? 0) * (item.quantity ?? 1),
-                    0
+                    0,
                   ) *
                     1.0825 -
                   discountAmount
@@ -236,76 +253,97 @@ const Checkout = () => {
         </div>
 
         {/* Billing Address */}
-        <div className="w-full md:w-3/4 px-4">
-          <div className="bg-black text-white p-6 rounded shadow">
-            <h3 className="text-lg font-semibold">Billing Address</h3>
-            <label className="block mt-2">
-              <span className="flex items-center">
-                <User className="mr-2" /> Full Name
-              </span>
-              <input
-                type="text"
-                placeholder="John M. Doe"
-                className="w-full p-2 border rounded mt-1 text-black"
-              />
-            </label>
-            <label className="block mt-2">
-              <span className="flex items-center">
-                <Mail className="mr-2" />
-                Email
-              </span>
-              <input
-                type="text"
-                placeholder="john@example.com"
-                className="w-full p-2 border rounded mt-1 text-black"
-              />
-            </label>
-            <label className="block mt-2">
-              <span className="flex items-center">
-                <MapPin className="mr-2" /> Address
-              </span>
-              <input
-                type="text"
-                placeholder="542 W. 15th Street"
-                className="w-full p-2 border rounded mt-1 text-black"
-              />
-            </label>
-            <label className="block mt-2">
-              <span className="flex items-center">
-                <Building2 className="mr-2" /> City
-              </span>
-              <input
-                type="text"
-                placeholder="San Antonio"
-                className="w-full p-2 border rounded mt-1 text-black"
-              />
-            </label>
-            <div className="flex -mx-2 mt-2">
-              <div className="w-1/2 px-2">
-                <label>State</label>
-                <input
-                  type="text"
-                  placeholder="TX"
-                  className="w-full p-2 border rounded text-black"
-                />
-              </div>
-              <div className="w-1/2 px-2">
-                <label>Zip</label>
-                <input
-                  type="text"
-                  placeholder="10001"
-                  className="w-full p-2 border rounded text-black"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Card Summary */}
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="w-full bg-white text-black p-6 rounded shadow space-y-3"
         >
+          <h3 className="text-lg font-semibold">Billing Address</h3>
+          <label className="block mt-2">
+            <span className="flex items-center mb-2">
+              <User className="mr-2" /> Full Name
+            </span>
+            <input
+              type="text"
+              placeholder="John M. Doe"
+              className="w-full p-2 border rounded mt-1 my-0 text-black"
+              {...register("fullName")}
+            />
+            {errors.fullName && (
+              <p className="text-red-500 text-sm">{errors.fullName.message}</p>
+            )}
+          </label>
+          <label className="block mt-2">
+            <span className="flex items-center mb-2">
+              <Mail className="mr-2" />
+              Email
+            </span>
+            <input
+              type="text"
+              placeholder="john@example.com"
+              className="w-full p-2 border rounded mt-1 text-black"
+              {...register("email")}
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email.message}</p>
+            )}
+          </label>
+          <label className="block mt-2">
+            <span className="flex items-center mb-2">
+              <MapPin className="mr-2" /> Address
+            </span>
+            <input
+              type="text"
+              placeholder="542 W. 15th Street"
+              className="w-full p-2 border rounded mt-1 text-black"
+              {...register("address")}
+            />
+            {errors.address && (
+              <p className="text-red-500 text-sm">{errors.address.message}</p>
+            )}
+          </label>
+          <label className="block mt-2">
+            <span className="flex items-center mb-2">
+              <Building2 className="mr-2" /> City
+            </span>
+            <input
+              type="text"
+              placeholder="San Antonio"
+              className="w-full p-2 border rounded mt-1 text-black"
+              {...register("city")}
+            />
+            {errors.city && (
+              <p className="text-red-500 text-sm">{errors.city.message}</p>
+            )}
+          </label>
+          <div className="flex -mx-2 mt-2">
+            <div className="w-1/2 px-2">
+              <label>State</label>
+              <input
+                type="text"
+                placeholder="TX"
+                className="w-full p-2 border rounded text-black"
+                {...register("state")}
+              />
+              {errors.state && (
+                <p className="text-red-500 text-sm">{errors.state.message}</p>
+              )}
+            </div>
+            <div className="w-1/2 px-2">
+              <label>Zip</label>
+              <input
+                type="text"
+                placeholder="10001"
+                className="w-full p-2 border rounded text-black"
+                {...register("zip")}
+              />
+              {errors.zip && (
+                <p className="text-red-500 text-sm">{errors.zip.message}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Card Summary */}
+
           <h3 className="text-lg font-semibold">Payment</h3>
           <label>Accepted Cards</label>
           <div className="flex gap-2 mb-2">

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster"
-import NextTopLoader from 'nextjs-toploader';
+import { Toaster } from "@/components/ui/toaster";
+import NextTopLoader from "nextjs-toploader";
 import { Provider } from "@/context/Provider";
 
 const geistSans = Geist({
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   title: "Sorcerer's Supply",
   description: "Wizard focused ecommerce site",
   icons: {
-    icon: '/favicon.ico', 
+    icon: "/favicon.ico",
   },
   openGraph: {
     title: "Sorcerer's Supply",
@@ -50,7 +50,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <main>
-        <NextTopLoader height={4} color="#FF0000"/>
+          <NextTopLoader height={4} color="#FF0000" />
           <Provider>{children}</Provider>
         </main>
         <Toaster />
