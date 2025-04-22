@@ -45,53 +45,36 @@ const OrderDetail = () => {
           <>
             <h1 className="text-2xl font-bold mb-6">Order Detail</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Left Info */}
-              <div className="bg-zinc-900 border border-white rounded-lg shadow p-6 space-y-3">
-                <h2 className="text-lg font-semibold mb-2">Customer Info</h2>
-                <p>
-                  <strong>Order ID:</strong> {order.id}
-                </p>
-                <p>
-                  <strong>Status:</strong> {order.status}
-                </p>
-                <p>
-                  <strong>Customer:</strong> {order.customerFullname}
-                </p>
-                <p>
-                  <strong>Email:</strong> {order.customerEmail}
-                </p>
-                <p>
-                  <strong>Created At:</strong>{" "}
-                  {new Date(order.createdAt).toLocaleString()}
-                </p>
-                <p>
-                  <strong>Total:</strong> ${order.total.toFixed(2)}
-                </p>
-              </div>
+  {/* Left Info */}
+  <div className="bg-gradient-to-br from-zinc-900 to-zinc-800 border border-white rounded-xl shadow-xl p-6 space-y-4 transition hover:scale-[1.01] duration-200">
+    <h2 className="text-xl font-bold text-emerald-300 flex items-center gap-2">
+      📄 Customer Info
+    </h2>
+    <div className="space-y-1 text-sm leading-relaxed">
+      <p><span className="font-semibold text-emerald-400">Order ID:</span> {order.id}</p>
+      <p><span className="font-semibold text-emerald-400">Status:</span> {order.status}</p>
+      <p><span className="font-semibold text-emerald-400">Customer:</span> {order.customerFullname}</p>
+      <p><span className="font-semibold text-emerald-400">Email:</span> {order.customerEmail}</p>
+      <p><span className="font-semibold text-emerald-400">Created At:</span> {new Date(order.createdAt).toLocaleString()}</p>
+      <p><span className="font-semibold text-emerald-400">Total:</span> ${order.total.toFixed(2)}</p>
+    </div>
+  </div>
 
-              {/* Shipping Address */}
-              <div className="bg-zinc-900 border border-white rounded-lg shadow p-6 space-y-3">
-                <h2 className="text-lg font-semibold mb-2">Shipping Address</h2>
-                <p>
-                  <strong>Full Name:</strong> {order.customerFullname}
-                </p>
-                <p>
-                  <strong>Email:</strong> {order.customerEmail}
-                </p>
-                <p>
-                  <strong>Address:</strong> {order.address || "N/A"}
-                </p>
-                <p>
-                  <strong>City:</strong> {order.city || "N/A"}
-                </p>
-                <p>
-                  <strong>State:</strong> {order.state || "N/A"}
-                </p>
-                <p>
-                  <strong>Zip:</strong> {order.zip || "N/A"}
-                </p>
-              </div>
-            </div>
+  {/* Shipping Address */}
+  <div className="bg-gradient-to-br from-zinc-900 to-zinc-800 border border-white rounded-xl shadow-xl p-6 space-y-4 transition hover:scale-[1.01] duration-200">
+    <h2 className="text-xl font-bold text-emerald-300 flex items-center gap-2">
+      🚚 Shipping Address
+    </h2>
+    <div className="space-y-1 text-sm leading-relaxed">
+      <p><span className="font-semibold text-emerald-400">Full Name:</span> {order.fullName}</p>
+      <p><span className="font-semibold text-emerald-400">Email:</span> {order.email}</p>
+      <p><span className="font-semibold text-emerald-400">Address:</span> {order.address || "N/A"}</p>
+      <p><span className="font-semibold text-emerald-400">City:</span> {order.city || "N/A"}</p>
+      <p><span className="font-semibold text-emerald-400">State:</span> {order.state || "N/A"}</p>
+      <p><span className="font-semibold text-emerald-400">Zip:</span> {order.zip || "N/A"}</p>
+    </div>
+  </div>
+</div>
 
             <h2 className="text-xl font-semibold mt-8 mb-4">Products</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -100,7 +83,7 @@ const OrderDetail = () => {
                   key={index}
                   className="bg-zinc-900 border border-white rounded-lg p-4 shadow"
                 >
-                  <div className="w-full mb-2 h-[200px] grid place-items-center">
+                  <div className="w-full mb-2 h-[200px] grid place-items-center overflow-hidden">
                     <Image
                       src={
                         product.productData?.imageSrc ||
@@ -115,7 +98,7 @@ const OrderDetail = () => {
                   <h3 className="text-lg font-semibold">
                     {product.productData?.name || "Unknown Product"}
                   </h3>
-                  <p className="text-amber-300 text-sm mb-2">
+                  <p className="text-emerald-300 text-sm mb-2">
                     {product.productData?.description?.split("\n")[0] ||
                       "No description available"}
                   </p>
