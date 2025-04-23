@@ -84,7 +84,7 @@ export default function SellerDashboard() {
           console.log("User:", user);
         });
       } else {
-        router.push("/login");
+        router.replace("/login");
       }
     });
   }, []);
