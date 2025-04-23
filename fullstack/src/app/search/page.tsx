@@ -71,6 +71,17 @@ const SearcComponent = () => {
     });
   }
 
+  function sortQuantity() {
+    setFilteredProducts((prevProducts) => {
+      if (prevProducts) {
+        const sortedProducts = [...prevProducts].sort((a, b) => {
+          return (b.quantity || 0) - (a.quantity || 0);
+        });
+        return sortedProducts;
+      }
+    });
+  }
+
   return (
     <div>
       <div className="px-4 py-1 border-b border-gray-800 flex justify-end">
@@ -95,6 +106,9 @@ const SearcComponent = () => {
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => sortPrice(true)}>
               Price: High to Low
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => sortQuantity()}>
+              Quantity
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
