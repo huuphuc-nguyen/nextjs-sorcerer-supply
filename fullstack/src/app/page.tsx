@@ -23,18 +23,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  const {
-    handleAuthClicked,
-    handleCartClicked,
-    handleAccountClicked,
-    handleSearchClicked,
-    handleDashboardClicked,
-    authenticated,
-    cartOpen,
-    setSearchText,
-    setCartOpen,
-  } = useHeader();
-
   useEffect(() => {
     getProducts()
       .then((products) => setFeaturedProducts(products))
@@ -54,15 +42,6 @@ export default function Home() {
 
   return (
     <div>
-      <SiteHeader
-        authenticated={authenticated}
-        setSearchText={setSearchText}
-        onDashboardClicked={handleDashboardClicked}
-        onSearchClicked={handleSearchClicked}
-        onAuthClicked={handleAuthClicked}
-        onCartClicked={handleCartClicked}
-        onAccountClicked={handleAccountClicked}
-      />
       <div className="flex justify-center py-4 overflow-y-auto">
         <Carousel
           className="w-full max-w-xl"
@@ -131,7 +110,6 @@ export default function Home() {
         )}
       </div>
 
-      <CartSheet onOpenChange={setCartOpen} open={cartOpen} />
     </div>
   );
 }

@@ -29,9 +29,9 @@ export default function Signup() {
       createUserInDatabase();
 
       toast({
-        title: "Login successful",
+        title: "Signup successful",
         variant: "success",
-        description: "Welcome back!",
+        description: "Welcome to Sorcerer Supply!",
       });
 
       const token = await userCredential.user.getIdToken();
@@ -41,12 +41,12 @@ export default function Signup() {
 
       router.push("/");
     } catch (error) {
-      console.error(error);
+      const err = error as Error
 
       toast({
-        title: "Login failed",
+        title: "Signup failed",
         variant: "destructive",
-        description: "Please check your email and password and try again.",
+        description: "Oops! Something went wrong: " + err.message.split("Firebase: ")[1],
       });
     }
   };
