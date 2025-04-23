@@ -4,9 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "nextjs-toploader/app";
 import { getProducts, Product } from "@/lib/firebase/products";
 import { LoadingSpinner } from "@/components/ui/spinner";
-import { SiteHeader } from "@/components/SiteHeader/site-header";
 import { ProductCard } from "@/components/ProductCard/product-card";
-import { CartSheet } from "@/components/CartSheet/cart-sheet";
 import {
   Carousel,
   CarouselContent,
@@ -14,7 +12,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { useHeader } from "@/hooks/use-header";
 import Image from "next/image";
 
 export default function Home() {

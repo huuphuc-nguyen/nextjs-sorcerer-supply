@@ -67,7 +67,6 @@ export const createOrderInDatabase = async (products: CartItem[], totalPayment: 
                   }),
                 });
         
-                console.log("Order added to user doc");
               } catch (error) {
                 console.error("Failed to add order:", error);
               }
@@ -210,7 +209,6 @@ export const updateOrderStatus = async (userId: string ,orderId: string, status:
               });
     
               await updateDoc(userDocRef, { orders: updatedOrders });
-              console.log("Order status updated successfully");
             } else {
               console.log("No such document!");
             }

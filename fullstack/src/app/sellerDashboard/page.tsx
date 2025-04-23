@@ -81,7 +81,6 @@ export default function SellerDashboard() {
         }
         getUserFromDatabase(user.uid).then((user) => {
           setFullName(user?.fullname || "New Customer");
-          console.log("User:", user);
         });
       } else {
         router.replace("/login");

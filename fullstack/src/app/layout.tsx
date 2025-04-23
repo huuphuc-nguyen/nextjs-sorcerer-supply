@@ -53,8 +53,9 @@ export default function RootLayout({
         <main>
           <NextTopLoader height={4} color="#FF0000" />
           <Provider>
-            <HeaderWrapper />
+            <HeaderWrapper>
             {children}
+            </HeaderWrapper>
           </Provider>
         </main>
         <Toaster />
