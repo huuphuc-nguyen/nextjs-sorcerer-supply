@@ -77,7 +77,7 @@ export default function AddItemPage() {
           <Link href="/sellerDashboard" className="hover:underline">
             Dashboard
           </Link>
-          <Link href="#" className="hover:underline">
+          <Link href="/discount" className="hover:underline">
             Discounts
           </Link>
           <Link href="/" className="hover:underline">
