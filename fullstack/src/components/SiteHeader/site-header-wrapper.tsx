@@ -13,8 +13,8 @@ interface HeaderWrapperProps {
 }
 
 const HeaderWrapper = ({children} : HeaderWrapperProps) => {
-  const HIDE_HEADER_ROUTES = ["login", "signup", "sellerDashboard", "addItems", "modifyItems", "order"];
-  const ADMIN_ROUTE = ["sellerDashboard", "addItems", "modifyItems", "order"];
+  const HIDE_HEADER_ROUTES = ["login", "signup", "sellerDashboard", "addItems", "modifyItems", "order", "discount"];
+  const ADMIN_ROUTE = ["sellerDashboard", "addItems", "modifyItems", "order", "discount"];
   const pathname = usePathname();
   const router = useRouter();
 
