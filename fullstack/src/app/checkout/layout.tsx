@@ -5,7 +5,7 @@ import { SiteHeader } from "@/components/SiteHeader/site-header";
 import { useHeader } from "@/hooks/use-header";
 import { CartSheet } from "@/components/CartSheet/cart-sheet";
 
-const AccountLayout = ({ children }: { children: React.ReactNode }) => {
+const CheckoutLayout = ({ children }: { children: React.ReactNode }) => {
   const {
     handleAuthClicked,
     handleCartClicked,
@@ -40,4 +40,4 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default AccountLayout;
+export default CheckoutLayout;

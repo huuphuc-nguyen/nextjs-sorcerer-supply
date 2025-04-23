@@ -1,18 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from 'nextjs-toploader/app';
-import { getProducts, Product } from '@/lib/firebase/products';
-import { LoadingSpinner } from '@/components/ui/spinner';
+import { useRouter } from "nextjs-toploader/app";
+import { getProducts, Product } from "@/lib/firebase/products";
+import { LoadingSpinner } from "@/components/ui/spinner";
 import { SiteHeader } from "@/components/SiteHeader/site-header";
 import { ProductCard } from "@/components/ProductCard/product-card";
-import { CartSheet } from '@/components/CartSheet/cart-sheet';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { CartSheet } from "@/components/CartSheet/cart-sheet";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { useHeader } from "@/hooks/use-header";
 import Image from "next/image";
 
 export default function Home() {
-
   const router = useRouter();
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,17 +46,29 @@ export default function Home() {
   }, []);
 
   const images = [
-    '/banner_3.png',
-    '/banner_1.png',
-    '/banner_2.png',
-    '/banner_4.png',
+    "/banner_3.png",
+    "/banner_1.png",
+    "/banner_2.png",
+    "/banner_4.png",
   ];
 
   return (
     <div>
-      <SiteHeader authenticated={authenticated} setSearchText={setSearchText} onDashboardClicked={handleDashboardClicked} onSearchClicked={handleSearchClicked} onAuthClicked={handleAuthClicked} onCartClicked={handleCartClicked} onAccountClicked={handleAccountClicked} />
-      <div className='flex justify-center py-4 overflow-y-auto'>
-        <Carousel className='w-full max-w-xl' id="hero-carousel" opts={{ loop: true }}>
+      <SiteHeader
+        authenticated={authenticated}
+        setSearchText={setSearchText}
+        onDashboardClicked={handleDashboardClicked}
+        onSearchClicked={handleSearchClicked}
+        onAuthClicked={handleAuthClicked}
+        onCartClicked={handleCartClicked}
+        onAccountClicked={handleAccountClicked}
+      />
+      <div className="flex justify-center py-4 overflow-y-auto">
+        <Carousel
+          className="w-full max-w-xl"
+          id="hero-carousel"
+          opts={{ loop: true }}
+        >
           <CarouselContent>
             {images.map((value, index) => (
               <CarouselItem className="flex content-center" key={index}>
@@ -72,23 +89,28 @@ export default function Home() {
         </Carousel>
       </div>
 
-      <div className='flex flex-col gap-4 justify-center w-full px-[10%] py-4'>
+      <div className="flex flex-col gap-4 justify-center w-full px-[10%] py-4">
         <p>Featured</p>
-        {loading &&
+        {loading && (
           <div className="flex justify-center items-center gap-4">
             <LoadingSpinner className="w-16 aspect-square" />
             <p>Loading products...</p>
           </div>
-        }
-        {!loading &&
-          <Carousel className='w-full'>
+        )}
+        {!loading && (
+          <Carousel className="w-full">
             <CarouselContent>
               {featuredProducts?.map((product) => (
                 <CarouselItem
-                  className='basis-1/5'
+                  className="basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
                   key={product.id}
-                  onClick={() => router.push(`/productPage/${product.collectionName}/${product.id}`)}
-                  style={{ cursor: "pointer" }}>
+                  onClick={() =>
+                    router.push(
+                      `/productPage/${product.collectionName}/${product.id}`,
+                    )
+                  }
+                  style={{ cursor: "pointer" }}
+                >
                   <ProductCard
                     key={product.id}
                     name={product.name}
@@ -101,8 +123,12 @@ export default function Home() {
             <CarouselPrevious />
             <CarouselNext />
           </Carousel>
-        }
-        {error && <p className="text-red-400 text-center">There was an error loading the products</p>}
+        )}
+        {error && (
+          <p className="text-red-400 text-center">
+            There was an error loading the products
+          </p>
+        )}
       </div>
 
       <CartSheet onOpenChange={setCartOpen} open={cartOpen} />

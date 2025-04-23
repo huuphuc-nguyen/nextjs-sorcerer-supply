@@ -35,7 +35,6 @@ const CategoryPage = () => {
           price: product.price,
           imageSrc: product.imageSrc,
           collectionName: product.collectionName || collection,
-          
         }));
 
         setProducts(mappedProducts);

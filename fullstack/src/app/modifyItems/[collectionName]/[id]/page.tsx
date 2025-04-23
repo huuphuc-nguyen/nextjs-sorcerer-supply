@@ -20,7 +20,7 @@ import { deleteProductFromDatabase } from "@/lib/firebase/products";
 export default function ModifyItems() {
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState<DocumentSnapshot<DocumentData> | null>(
-    null
+    null,
   );
 
   const router = useRouter();
@@ -28,23 +28,32 @@ export default function ModifyItems() {
   const { collectionName, id } = useParams();
   const [quantity, setQuantity] = useState(0);
   const [price, setPrice] = useState(0);
-  const [name, setName] = useState(""); 
+  const [name, setName] = useState("");
   const [description, setDescription] = useState<string>("");
 
   const handleDelete = async () => {
-       if (!window.confirm("Are you sure you want to delete this product?")) return;
-       try {
-         await deleteProductFromDatabase(
-           collectionName!.toString(),
-           id!.toString()
-         );
-         toast({ title: "Deleted", description: "Product removed.", variant: "success" });
-         router.push("/sellerDashboard");
-       } catch (e) {
-         console.error(e);
-         toast({ title: "Error", description: "Could not delete.", variant: "destructive" });
-       }
-     };
+    if (!window.confirm("Are you sure you want to delete this product?"))
+      return;
+    try {
+      await deleteProductFromDatabase(
+        collectionName!.toString(),
+        id!.toString(),
+      );
+      toast({
+        title: "Deleted",
+        description: "Product removed.",
+        variant: "success",
+      });
+      router.push("/sellerDashboard");
+    } catch (e) {
+      console.error(e);
+      toast({
+        title: "Error",
+        description: "Could not delete.",
+        variant: "destructive",
+      });
+    }
+  };
 
   useEffect(() => {
     if (!collectionName || !id) {
@@ -70,11 +79,11 @@ export default function ModifyItems() {
           setDescription(data.description);
         }
         setLoading(false);
-      }
+      },
     );
   }, [collectionName, id, toast]);
 
-  const handleUpdate = async (field: string, value: any) => {
+  const handleUpdate = async (field: string, value: string | number) => {
     if (!collectionName || !id) return;
 
     const updateMap: Record<string, Function> = {
@@ -177,23 +186,22 @@ export default function ModifyItems() {
                       e.preventDefault();
                       handleUpdate("description", description.trim());
                     }
-
                   }}
                   rows={10}
                   className="bg-zinc-900 text-white p-2 rounded w-full resize-y"
                 />
               </FieldBlock>
-               
-                  {/* ← Add your Delete button here */}
-                  <div className="w-full flex justify-center mt-4">
-                    <button
-                      onClick={handleDelete}
-                      style={{ width: "50%", height: "50px",marginTop: "10%" }}
-                      className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition"
-                    >
-                      Delete Product
-                    </button>
-                  </div>
+
+              {/* ← Add your Delete button here */}
+              <div className="w-full flex justify-center mt-4">
+                <button
+                  onClick={handleDelete}
+                  style={{ width: "50%", height: "50px", marginTop: "10%" }}
+                  className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                >
+                  Delete Product
+                </button>
+              </div>
             </div>
           </>
         )}
@@ -211,7 +219,9 @@ function FieldBlock({
 }) {
   return (
     <div>
-      <label className="block text-sm font-semibold mb-2 text-zinc-500">{label}:</label>
+      <label className="block text-sm font-semibold mb-2 text-zinc-500">
+        {label}:
+      </label>
       {children}
     </div>
   );

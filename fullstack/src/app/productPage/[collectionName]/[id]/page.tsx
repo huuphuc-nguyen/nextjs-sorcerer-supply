@@ -2,11 +2,12 @@
 import { LoadingSpinner } from "@/components/ui/spinner";
 import { ProductCardFull } from "@/components/ProductCard/product-card";
 import { getProductDocument } from "@/lib/firebase/getProduct";
-import { DocumentSnapshot, DocumentData } from "firebase/firestore";
+import { DocumentSnapshot, DocumentData, doc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useParams } from "next/navigation";
 import { updateProductQuantity } from "@/lib/firebase/products";
+import { useCartContext } from "@/context/cartContext";
 
 interface CartItem {
   productID?: string;
@@ -21,6 +22,10 @@ export default function ProductPage() {
     useState<DocumentSnapshot<DocumentData> | null>(null);
   const { toast } = useToast();
   const { collectionName, id } = useParams();
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+
+  // use trigger to force re-render to update sotck quantity when cart changes
+  const { trigger } = useCartContext();
 
   useEffect(() => {
     // Get Firebase authentication
@@ -31,7 +36,7 @@ export default function ProductPage() {
         (docSnap) => {
           setProductDocument(docSnap);
           setLoadingProducts(false);
-        }
+        },
       );
     } else {
       toast({
@@ -41,94 +46,91 @@ export default function ProductPage() {
       });
       window.location.href = "/"; // Redirect to products page
     }
-  }, [id, collectionName, toast]);
+  }, [id, collectionName, toast, trigger]);
 
-  const handleOutOfStockClicked = () => {      
+  const handleOutOfStockClicked = () => {
     toast({
-    title: "Out of Stock",
-    variant: "destructive",
-    description: "This item is currently out of stock.",
-  });}
+      title: "Out of Stock",
+      variant: "destructive",
+      description: "This item is currently out of stock.",
+    });
+  };
 
-  const handleAddToCartClicked = () => {
+  const handleAddToCartClicked = async () => {
+    if (isAddingToCart) return; // 🔒 Prevent spam click
+    setIsAddingToCart(true);
 
-    // Check if the product is in stock
-    if (!productDocument?.data()?.inStock) {
-      toast({
-        title: "Out of Stock",
-        variant: "destructive",
-        description: "This item is currently out of stock.",
-      });
-      return;
-    }
-    
-    // Update local state
-    console.log("Product data before update:", productDocument);
+    try {
+      const latestDoc = await getProductDocument(
+        collectionName?.toString() ?? "",
+        id?.toString() ?? "",
+      );
+      const currentQty = latestDoc.data()?.quantity;
 
-    // Update the database
-    updateProductQuantity(
-      productDocument.data()?.collectionName,
-      productDocument.id,
-      productDocument.data()?.quantity - 1
-    )
-      .then(() => {
-
-        // Update local state
-        if (collectionName && id) {
-        getProductDocument(collectionName.toString(), id.toString()).then(
-          (docSnap) => {
-            setProductDocument(docSnap);
-          }
-        );
-        }
-
+      if (!latestDoc.data()?.inStock || currentQty <= 0) {
         toast({
-          title: "Item added to cart",
-          variant: "success",
-          description: `"${
-            productDocument?.data()?.name
-          } has been added to your cart."`,
-        });
-        // Get current cart items from local storage
-        const items = localStorage.getItem("cartItems");
-        const cartItems = items ? JSON.parse(decodeURIComponent(items)) : [];
-
-        // Prepare new item
-        const newItem: CartItem = {
-          productID: productDocument?.id,
-          productData: productDocument?.data(),
-          quantity: 1,
-        };
-
-        // Add item to cart
-        if (cartItems.length > 0) {
-          const existingItemIndex = cartItems.findIndex(
-            (item: CartItem) => item.productID === newItem.productID
-          );
-          if (existingItemIndex !== -1) {
-            const updateItem = cartItems[existingItemIndex];
-            updateItem.quantity = (updateItem.quantity || 0) + 1;
-            cartItems[existingItemIndex] = updateItem;
-          } else {
-            cartItems.push(newItem); // Add new item if it doesn't exist
-          }
-        } else {
-          cartItems.push(newItem);
-        }
-
-        // Save updated cart to local storage
-        localStorage.setItem(
-          "cartItems",
-          encodeURIComponent(JSON.stringify(cartItems))
-        );
-      })
-      .catch((error) => {
-        toast({
-          title: "Error",
+          title: "Out of Stock",
           variant: "destructive",
-          description: "Failed to add item to cart: " + error.message,
+          description: "This item is currently out of stock.",
         });
+        return;
+      }
+
+      await updateProductQuantity(
+        collectionName?.toString() ?? "",
+        id?.toString() ?? "",
+        currentQty - 1,
+      );
+
+      // Proceed to update localStorage here...
+      // Use latestDoc instead of stale productDocument
+      const items = localStorage.getItem("cartItems");
+      const cartItems = items ? JSON.parse(decodeURIComponent(items)) : [];
+
+      const newItem: CartItem = {
+        productID: latestDoc.id,
+        productData: latestDoc.data(),
+        quantity: 1,
+      };
+
+      const existingItemIndex = cartItems.findIndex(
+        (item: CartItem) => item.productID === newItem.productID,
+      );
+
+      if (existingItemIndex !== -1) {
+        cartItems[existingItemIndex].quantity += 1;
+      } else {
+        cartItems.push(newItem);
+      }
+
+      localStorage.setItem(
+        "cartItems",
+        encodeURIComponent(JSON.stringify(cartItems)),
+      );
+
+      toast({
+        title: "Item added to cart",
+        variant: "success",
+        description: `${latestDoc.data()?.name} has been added to your cart.`,
       });
+
+      // Refresh product state
+      getProductDocument(
+        collectionName?.toString() ?? "",
+        id?.toString() ?? "",
+      ).then((docSnap) => {
+        setProductDocument(docSnap);
+      });
+    } catch (error) {
+      const err = error as Error;
+      toast({
+        title: "Error",
+        variant: "destructive",
+        description: "Failed to add item to cart: " + err.message,
+      });
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   return (
@@ -161,7 +163,9 @@ export default function ProductPage() {
               </div>
               <div className=" p-4 rounded shadow-sm">
                 <p className="text-md ">
-                  {(productDocument.data()?.quantity > 0) ? "In stock: " + productDocument.data()?.quantity : "Out of stock."}
+                  {productDocument.data()?.quantity > 0
+                    ? "In stock: " + productDocument.data()?.quantity
+                    : "Out of stock."}
                 </p>
               </div>
               {/* Name, Price, Button Section */}
@@ -174,15 +178,24 @@ export default function ProductPage() {
                 </p>
                 {productDocument.data()?.inStock ? (
                   <button
-                    className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    className=" relative mt-6 bg-black text-white px-4 py-2 rounded group transition-all duration-500 hover:text-black"
                     onClick={handleAddToCartClicked}
+                    disabled={isAddingToCart}
                   >
-                    Add to Cart
+                    <span className="relative z-10">
+                      {isAddingToCart ? (
+                        <LoadingSpinner className="text-center w-full" /> // Loading spinner
+                      ) : (
+                        "Add to Cart"
+                      )}
+                    </span>
+                    <span className="absolute top-0 left-1/2 -translate-x-1/2 h-full w-0 bg-white group-hover:w-full transition-all duration-500"></span>
                   </button>
                 ) : (
-                  <button 
+                  <button
                     className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                    onClick={handleOutOfStockClicked}>
+                    onClick={handleOutOfStockClicked}
+                  >
                     Out of Stock
                   </button>
                 )}

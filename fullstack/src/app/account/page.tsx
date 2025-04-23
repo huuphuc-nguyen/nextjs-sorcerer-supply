@@ -71,7 +71,12 @@ const Account = () => {
     const fetchOrders = async () => {
       const result = await getThisUserOrdersFromDatabase();
       if (result) {
-        setOrders(result);
+        setOrders(
+          result.sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          ),
+        ); // Sort orders by createdAt in descending order
         console.log("Orders:", orders);
       }
     };

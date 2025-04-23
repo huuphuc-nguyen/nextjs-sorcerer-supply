@@ -11,13 +11,29 @@ export type Order = {
     status: string;
     createdAt: string;
     products: CartItem[];
+    total: number;
+    // Shipping details
+    address: string;
+    city: string;
+    state: string;
+    zip: string;
+    fullName: string;
+    email: string;
   };
 
 export type AdminOrder = Order & {
     customerFullname: string;
     customerEmail: string;
-    total: number;
     userId: string;
+}
+
+interface shippingDetails {
+  fullName: string;
+  email: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
 }
 
 function generateOrderId(): string {
@@ -26,7 +42,7 @@ function generateOrderId(): string {
   return `order-${timestamp}-${randomNum}`;
 }
 
-export const createOrderInDatabase = async (products: CartItem[] ) => {
+export const createOrderInDatabase = async (products: CartItem[], totalPayment: number, shippingDetails: shippingDetails ) => {
     
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -41,6 +57,13 @@ export const createOrderInDatabase = async (products: CartItem[] ) => {
                     products,
                     createdAt: new Date().toISOString(),
                     status: "pending",
+                    total: totalPayment,
+                    fullName: shippingDetails.fullName,
+                    email: shippingDetails.email,
+                    address: shippingDetails.address,
+                    city: shippingDetails.city,
+                    state: shippingDetails.state,
+                    zip: shippingDetails.zip,
                   }),
                 });
         
@@ -87,6 +110,40 @@ export const getThisUserOrdersFromDatabase = (): Promise<Order[]> => {
     });
   };
 
+export const getUserOrderFromDatabase = async (userId: string, orderId: string): Promise<AdminOrder> => {
+  return new Promise((resolve, reject) => {
+    try{
+      getDoc(doc(db, "users", userId)).then((docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+            const userId = docSnap.id;
+          const orders = data.orders as Order[];
+          const order = orders.find((order: Order) => order.id === orderId);
+          const userEmail = data.email as string;
+          const userFullName = data.fullname as string;
+          if (order) {
+            const orderWithUserInfo: AdminOrder = {
+              ...order,
+              customerFullname: userFullName,
+              customerEmail: userEmail,
+              userId: userId,
+            };
+            resolve(orderWithUserInfo);
+          } else {
+            reject(new Error("Order not found"));
+          }
+        } else {
+          reject(new Error("User document not found"));
+        }
+      });
+    }
+    catch (error) {
+      console.error("Failed to fetch order:", error);
+      reject(error);
+    }
+  })
+}
+
 export const getAllOrdersFromDatabase = async (): Promise<AdminOrder[]> => {
   return new Promise((resolve, reject) => {
     onAuthStateChanged(auth, async (user) => {
@@ -100,26 +157,16 @@ export const getAllOrdersFromDatabase = async (): Promise<AdminOrder[]> => {
 
           docSnap.forEach((doc) => {
             const userOrders = doc.data().orders as Order[];
-            const userFullName = doc.data().fullname || "Unknown User";
-            const userEmail = doc.data().email || "Unknown Email";
             const userId = doc.id;
+            const userEmail = doc.data().email as string;
+            const userFullName = doc.data().fullname as string;
 
             if (userOrders && Array.isArray(userOrders)) {
                 userOrders.forEach((order) => {
-                    
-                    let userTotal = 0;
-
-                    order.products.forEach(product => {
-                        if (product.productData?.price && product.quantity) {
-                        userTotal += product.productData?.price * product?.quantity;
-                      }
-                    })
-
                     const orderWithUserInfo: AdminOrder = {
                         ...order,
                         customerFullname: userFullName,
                         customerEmail: userEmail,
-                        total: userTotal,
                         userId: userId,
                     }
                     allOrders.push(orderWithUserInfo); // You can customize this part if you want to store more information about each order
@@ -175,4 +222,5 @@ export const updateOrderStatus = async (userId: string ,orderId: string, status:
         }
       });
 }
+  ;
   
