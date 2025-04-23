@@ -17,7 +17,8 @@ export async function getCategory(collectionName: string) {
         name: doc.data().name,
         price: doc.data().price,
         imageSrc: doc.data().imageSrc,
-        collectionName: doc.data().collectionName || collectionName, // Add collectionName if missing
+        collectionName: doc.data().collectionName || collectionName,
+        inStock: doc.data()?.inStock // Add collectionName if missing
       }));
       return documents;
     } else {
