@@ -51,8 +51,6 @@ export default function addDiscount() {
       }
     };
   
-    /* delete */
-    /* delete by doc-ID, still show the code */
 const handleDelete = async (id: string, code: string) => {
     if (!confirm(`Delete discount code “${code}”?`)) return;
     await deleteDiscountCode(id,code);   // ← delete by ID
@@ -61,7 +59,6 @@ const handleDelete = async (id: string, code: string) => {
   };
   
   
-    /* save edit */
     const handleSaveEdit = async (id: string) => {
       if (editAmount === "" || Number(editAmount) <= 0) {
         toast({
