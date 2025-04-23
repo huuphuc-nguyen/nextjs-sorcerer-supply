@@ -3,7 +3,6 @@
 import React from "react";
 import Image from "next/image";
 import "./style.css";
-
 import { User } from "lucide-react";
 import { Mail } from "lucide-react";
 import { MapPin } from "lucide-react";
@@ -22,7 +21,7 @@ import { z } from "zod";
 import { createOrderInDatabase } from "@/lib/firebase/order";
 import { updateUserInDatabase } from "@/lib/firebase/users";
 import { getAuth } from "firebase/auth";
-
+import { getDiscountCodes } from "@/lib/firebase/products";
 const auth = getAuth();
 
 const schema = z.object({
@@ -49,6 +48,42 @@ const Checkout = () => {
   const [discountAmount, setDiscountAmount] = useState<number>(0);
   const [discountCode, setDiscountCode] = useState<string>("");
   const { toast } = useToast();
+  const [total, setTotal] = useState<number>(0);
+
+  const [discountCodes, setDiscountCodes] = useState<
+  { code: string; amount: number }[]
+  >([]);
+
+  useEffect(() => {
+    (async () => {
+      const all = await getDiscountCodes(); 
+      setDiscountCodes(
+        all.map((d) => ({ code: d.code.toUpperCase(), amount: d.amount }))
+      );
+    })();
+  }, []);
+
+  const validateDiscountCode = () => {
+    const found = discountCodes.find(
+      (d) => d.code === discountCode.trim().toUpperCase()
+    );
+
+    if (found) {
+      setDiscountAmount(found.amount);
+      toast({
+        title: "Success",
+        description: `Discount code applied – $${found.amount} off!`,
+        variant: "success",
+      });
+    } else {
+      setDiscountAmount(0);
+      toast({
+        title: "Error",
+        description: "Invalid discount code.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const {
     register,
@@ -69,24 +104,6 @@ const Checkout = () => {
     }
   }, []);
 
-  const handleDiscountCodeCheck = () => {
-    if (discountCode === "mycode") {
-      setDiscountAmount(10);
-      toast({
-        title: "Success",
-        description: "Discount code applied successfully!",
-        variant: "success",
-      });
-    } else {
-      setDiscountAmount(0);
-      toast({
-        title: "Error",
-        description: "Invalid discount code.",
-        variant: "destructive",
-      });
-    }
-  };
-
   const onSubmit = (data: CardFormSchema) => {
     const currentCart = localStorage.getItem("cartItems");
     const cartItems = currentCart
@@ -101,14 +118,23 @@ const Checkout = () => {
       });
       return;
     }
-    const totalPayment =
-      cartItems.reduce(
-        (total: number, item: CartItem) =>
-          total + (item.productData?.price ?? 0) * (item.quantity ?? 1),
-        0,
-      ) *
-        1.0825 -
-      discountAmount;
+    const subtotal = cartItems.reduce(
+      (sum: number, item: CartItem) =>
+        sum + (item.productData?.price ?? 0) * (item.quantity ?? 1),
+      0
+    );
+    
+    // apply discount first, then tax
+    const totalPayment = subtotal * (1 - discountAmount / 100) * 1.0825;
+    
+    setTotal(totalPayment);     
+    // const totalPayment =
+    //   cartItems.reduce(
+    //     (total: number, item: CartItem) =>
+    //       total + (item.productData?.price ?? 0) * (item.quantity ?? 1),
+    //     0,
+    //   ) *
+    //     1.0825;
     const shippingDetails = {
       fullName: data.fullName,
       email: data.email,
@@ -183,48 +209,47 @@ const Checkout = () => {
               </span>
             </p>
             <p className="flex justify-between my-2">
-              Tax 8.25%{" "}
-              <span>
-                $
-                {(
-                  cartItems.reduce(
-                    (total, item) =>
-                      total +
-                      (item.productData?.price ?? 0) * (item.quantity ?? 1),
-                    0,
-                  ) * 0.0825
-                ).toFixed(2)}
-              </span>
+            Tax 8.25%
+<span>
+  $
+  {(
+    cartItems.reduce(
+      (sum, item) =>
+        sum + (item.productData?.price ?? 0) * (item.quantity ?? 1),
+      0
+    ) *
+      (1 - discountAmount / 100) *   // ⬅ discount %
+      0.0825
+  ).toFixed(2)}
+</span>
             </p>
             <p className="flex justify-between my-2">
               Shipping <span>$0</span>
             </p>
             {discountAmount > 0 && (
               <p className="flex justify-between my-2">
-                Discount <span>${discountAmount}</span>
+                Discount <span>{discountAmount}%</span>
               </p>
             )}
             <hr className="my-2" />
             <p className="flex justify-between font-semibold">
-              Total{" "}
-              <span>
-                $
-                {(
-                  cartItems.reduce(
-                    (total, item) =>
-                      total +
-                      (item.productData?.price ?? 0) * (item.quantity ?? 1),
-                    0,
-                  ) *
-                    1.0825 -
-                  discountAmount
-                ).toFixed(2)}
-              </span>
+            Total
+<span>
+  $
+  {(
+    cartItems.reduce(
+      (sum, item) =>
+        sum + (item.productData?.price ?? 0) * (item.quantity ?? 1),
+      0
+    ) *
+      (1 - discountAmount / 100) *   // ⬅ discount %
+      1.0825                         // then tax
+  ).toFixed(2)}
+</span>
             </p>
           </div>
         </div>
 
-        {/* Discount block */}
         <div className="second">
           <div className="bg-white text-black p-6 rounded shadow">
             <h4 className="text-lg font-semibold flex items-center">
@@ -238,13 +263,13 @@ const Checkout = () => {
               onChange={(e) => setDiscountCode(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  handleDiscountCodeCheck();
+                  validateDiscountCode();
                 }
               }}
             />
             <button
               className="group relative w-full overflow-hidden rounded p-3 border-black border-2 bg-white text-black hover:text-white transition-all duration-300"
-              onClick={handleDiscountCodeCheck}
+              onClick={validateDiscountCode}
             >
               <span className="relative z-10">Apply discount</span>
               <span className="absolute left-0 top-0 h-full w-0 bg-black transition-all duration-500 group-hover:w-full"></span>

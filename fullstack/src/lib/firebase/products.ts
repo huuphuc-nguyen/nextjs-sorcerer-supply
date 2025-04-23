@@ -214,6 +214,65 @@ async function deleteProductFromDatabase(category: string, id: string) {
   await deleteDoc(docRef);
 }
 
+
+
+ async function createDiscountCode(code: string, amount: number) {
+  if (!code.trim()) throw new Error("Code cannot be empty");
+  if (amount <= 0)   throw new Error("Amount must be > 0");
+
+  // point at the collection only
+  const colRef = collection(db, "discountCodes");
+
+  // addDoc → Firestore assigns a 20-char random ID
+  const docRef = await addDoc(colRef, {
+    code: code.toUpperCase(),
+    amount,
+  });
+
+  return docRef;                  // docRef.id is the new random ID
+}
+
+interface Discount {
+  id: string;         
+  code: string;       
+  amount: number;      
+}
+
+async function getDiscountCodes(): Promise<Discount[]> {
+  try {
+    const q = query(
+      collection(db, "discountCodes"),
+    );
+
+    const snap = await getDocs(q);
+
+    return snap.docs.map((d: QueryDocumentSnapshot<DocumentData>) => ({
+      id: d.id,
+      code: d.data().code,
+      amount: d.data().amount,
+    }));
+  } catch (err) {
+    console.error("Error fetching discount codes:", err);
+    return [];
+  }
+}
+
+async function deleteDiscountCode(id:string,code:string) {
+  await deleteDoc(doc(db, "discountCodes", id));
+}
+ async function updateDiscountCode(
+  id: string,
+  code: string,
+  amount: number
+) {
+  const docRef = doc(db, "discountCodes", id);
+
+  await setDoc(
+    docRef,
+    { code: code.toUpperCase(), amount }, // merge just these fields
+    { merge: true }
+  );
+}
 export {
   getProductDocuments,
   getProducts,
@@ -225,6 +284,10 @@ export {
   addProductToDatabase,
   deleteProductFromDatabase,
   getProductByID,
+  createDiscountCode,
+  getDiscountCodes,
+  deleteDiscountCode,
+  updateDiscountCode,
 };
 
-export type { Product };
+export type { Product ,Discount};
