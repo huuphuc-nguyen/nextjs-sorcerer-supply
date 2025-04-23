@@ -9,7 +9,7 @@ import { usePathname } from "next/navigation";
 
 
 const HeaderWrapper = () => {
-    const HIDE_HEADER_ROUTES = ["/login", "/signup", "/sellerDashboard", "/addItems", "/modifyItems", "/orders"];
+    const HIDE_HEADER_ROUTES = ["/login", "/signup", "/sellerDashboard", "/addItems", "/modifyItems", "/orders","/discount"];
     const pathname = usePathname();
   const {
     handleAuthClicked,

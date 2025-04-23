@@ -192,7 +192,7 @@ export default function SellerDashboard() {
           <a href="#" className="hover:underline">
             Dashboard
           </a>
-          <Link href="#" className="hover:underline">
+          <Link href="/discount" className="hover:underline">
             Discounts
           </Link>
           <Link href="/" className="hover:underline">
