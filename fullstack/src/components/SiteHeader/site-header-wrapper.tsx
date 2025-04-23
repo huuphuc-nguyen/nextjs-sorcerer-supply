@@ -1,16 +1,26 @@
-// This is a wrapper component for the SiteHeader component to make it able to used in the root layout
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SiteHeader } from "./site-header";
 import { CartSheet } from "../CartSheet/cart-sheet";
 import { useHeader } from "@/hooks/use-header";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 
-const HeaderWrapper = () => {
-    const HIDE_HEADER_ROUTES = ["/login", "/signup", "/sellerDashboard", "/addItems", "/modifyItems", "/orders","/discount"];
-    const pathname = usePathname();
+interface HeaderWrapperProps {
+  children?: React.ReactNode;
+}
+
+const HeaderWrapper = ({children} : HeaderWrapperProps) => {
+  const HIDE_HEADER_ROUTES = ["login", "signup", "sellerDashboard", "addItems", "modifyItems", "order"];
+  const ADMIN_ROUTE = ["sellerDashboard", "addItems", "modifyItems", "order"];
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const [loadingAuth, setLoadingAuth] = useState(true); // wait for Firebase
+  const [isAdmin, setIsAdmin] = useState(false); // check if user is admin
+
   const {
     handleAuthClicked,
     handleCartClicked,
@@ -22,23 +32,62 @@ const HeaderWrapper = () => {
     setSearchText,
     setCartOpen,
   } = useHeader();
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      const isAdminRoute = ADMIN_ROUTE.includes(pathname.split("/")[1]);
+      
+      if (!user?.email?.includes("admin")) {
+        setIsAdmin(false); // not an admin
+      }
+      else {
+        setIsAdmin(true); // is an admin
+      }
+
+      if (isAdminRoute && !user?.email?.includes("admin")) {
+        router.push("/"); // fast client-side redirect
+      }
+      else {
+      }
+
+      setLoadingAuth(false); // done checking
+    });
+
+    return () => unsubscribe();
+  }, [pathname, router]);
+
+  const shouldHideHeader = HIDE_HEADER_ROUTES.some(route =>
+    pathname.split("/")[1]?.includes(route)
+  );
+
+  if (loadingAuth) {
+    return null; // Or return a loading spinner here
+  }
+  
+  if (!isAdmin && ADMIN_ROUTE.some(route => pathname.split("/")[1]?.includes(route))) {
+    return null; // Prevent rendering if the user is not an admin
+  }
+
   return (
-    <>{
-        !HIDE_HEADER_ROUTES.includes(pathname) && (
-          <div>
-            <SiteHeader
-              authenticated={authenticated}
-              setSearchText={setSearchText}
-              onDashboardClicked={handleDashboardClicked}
-              onSearchClicked={handleSearchClicked}
-              onAuthClicked={handleAuthClicked}
-              onCartClicked={handleCartClicked}
-              onAccountClicked={handleAccountClicked}
-            />
-            <CartSheet onOpenChange={setCartOpen} open={cartOpen} />
-          </div>
-        )
-    }
+    <>
+      {!shouldHideHeader && (
+        <div>
+          <SiteHeader
+            authenticated={authenticated}
+            setSearchText={setSearchText}
+            onDashboardClicked={handleDashboardClicked}
+            onSearchClicked={handleSearchClicked}
+            onAuthClicked={handleAuthClicked}
+            onCartClicked={handleCartClicked}
+            onAccountClicked={handleAccountClicked}
+            isAdmin={isAdmin}
+          />
+          <CartSheet onOpenChange={setCartOpen} open={cartOpen} />
+        </div>
+      )}
+
+      {loadingAuth ? null : children}
     </>
   );
 };

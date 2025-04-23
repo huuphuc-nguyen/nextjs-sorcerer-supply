@@ -15,7 +15,6 @@ const OrderDetail = () => {
     getUserOrderFromDatabase(userId! as string, orderId! as string)
       .then((order: AdminOrder) => {
         setOrder(order);
-        console.log("Order fetched successfully:", order);
       })
       .catch((error) => {
         console.error("Error fetching order:", error);

@@ -19,6 +19,7 @@ interface SiteHeaderProps {
   onCartClicked?: MouseEventHandler<HTMLButtonElement>;
   onAccountClicked?: MouseEventHandler<HTMLButtonElement>;
   onDashboardClicked?: MouseEventHandler<HTMLButtonElement>;
+  isAdmin?: boolean;
 }
 
 export function SiteHeader({
@@ -29,6 +30,7 @@ export function SiteHeader({
   onCartClicked,
   onAccountClicked,
   onDashboardClicked,
+  isAdmin,
 }: SiteHeaderProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between p-4 border-b border-gray-800 gap-4">
@@ -69,8 +71,8 @@ export function SiteHeader({
           {authenticated === null
             ? "..."
             : authenticated
-              ? "Sign out"
-              : "Log in"}
+            ? "Sign out"
+            : "Log in"}
         </Button>
 
         {/* Hide some actions on small screens */}
@@ -79,10 +81,12 @@ export function SiteHeader({
           <span className="hidden sm:flex">Account</span>
         </Button>
 
-        <Button onClick={onDashboardClicked} className="sm:flex">
-          <LayoutDashboard className="mr-1" />{" "}
-          <span className="hidden sm:flex">Dashboard</span>
-        </Button>
+        {isAdmin && (
+          <Button onClick={onDashboardClicked} className="sm:flex">
+            <LayoutDashboard className="mr-1" />{" "}
+            <span className="hidden sm:flex">Dashboard</span>
+          </Button>
+        )}
 
         <Button onClick={onCartClicked}>
           <ShoppingCart className="mr-1" />{" "}
