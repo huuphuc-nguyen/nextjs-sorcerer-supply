@@ -22,7 +22,7 @@ interface CartProduct {
   price: number;
   quantity: number;
 }
-export function CartSheet({ ...rest }: DialogProps) {
+export function CartSheet({onOpenChange, ...rest }: DialogProps) {
   const [cart, setCart] = useState<CartProduct[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -218,6 +218,7 @@ export function CartSheet({ ...rest }: DialogProps) {
       return;
     }
     router.push("/checkout");
+    onOpenChange?.(false);
   };
 
   return (

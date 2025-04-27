@@ -7,7 +7,6 @@ import { useHeader } from "@/hooks/use-header";
 import { usePathname, useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-
 interface HeaderWrapperProps {
   children?: React.ReactNode;
 }
