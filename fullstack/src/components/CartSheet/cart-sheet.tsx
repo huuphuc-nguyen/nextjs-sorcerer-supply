@@ -6,6 +6,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetClose,
 } from "@/components/ui/sheet";
 import { DialogProps } from "@radix-ui/react-dialog";
 import { Button } from "../ui/button";
@@ -22,7 +23,7 @@ interface CartProduct {
   price: number;
   quantity: number;
 }
-export function CartSheet({onOpenChange, ...rest }: DialogProps) {
+export function CartSheet({ onOpenChange, ...rest }: DialogProps) {
   const [cart, setCart] = useState<CartProduct[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -60,11 +61,11 @@ export function CartSheet({onOpenChange, ...rest }: DialogProps) {
       ? JSON.parse(decodeURIComponent(currentCart))
       : [];
     const productFound: CartItem = cartItems.find(
-      (item: CartItem) => item?.productData?.name == name,
+      (item: CartItem) => item?.productData?.name == name
     );
     getProductByID(
       productFound?.productData?.collectionName,
-      productFound?.productID ?? "",
+      productFound?.productID ?? ""
     ).then((product) => {
       if ((product?.quantity ?? 0) <= 0) {
         toast({
@@ -93,13 +94,13 @@ export function CartSheet({onOpenChange, ...rest }: DialogProps) {
         });
         localStorage.setItem(
           "cartItems",
-          encodeURIComponent(JSON.stringify(cartItems)),
+          encodeURIComponent(JSON.stringify(cartItems))
         );
 
         updateProductQuantity(
           productFound?.productData?.collectionName,
           productFound?.productID ?? "",
-          (product?.quantity ?? 0) - 1,
+          (product?.quantity ?? 0) - 1
         );
 
         toast({
@@ -120,7 +121,7 @@ export function CartSheet({onOpenChange, ...rest }: DialogProps) {
       ? JSON.parse(decodeURIComponent(currentCart))
       : [];
     const productFound: CartItem = cartItems.find(
-      (item: CartItem) => item?.productData?.name == name,
+      (item: CartItem) => item?.productData?.name == name
     );
 
     if ((productFound.quantity ?? 0) <= 1) {
@@ -130,7 +131,7 @@ export function CartSheet({onOpenChange, ...rest }: DialogProps) {
     }
     getProductByID(
       productFound?.productData?.collectionName,
-      productFound?.productID ?? "",
+      productFound?.productID ?? ""
     ).then((product) => {
       setCart((prevCart) => {
         const updatedCart = prevCart.map((product) => {
@@ -149,13 +150,13 @@ export function CartSheet({onOpenChange, ...rest }: DialogProps) {
       });
       localStorage.setItem(
         "cartItems",
-        encodeURIComponent(JSON.stringify(cartItems)),
+        encodeURIComponent(JSON.stringify(cartItems))
       );
 
       updateProductQuantity(
         productFound?.productData?.collectionName,
         productFound?.productID ?? "",
-        (product?.quantity ?? 0) + 1,
+        (product?.quantity ?? 0) + 1
       );
 
       toast({
@@ -174,24 +175,24 @@ export function CartSheet({onOpenChange, ...rest }: DialogProps) {
       ? JSON.parse(decodeURIComponent(currentCart))
       : [];
     const productFound: CartItem = cartItems.find(
-      (item: CartItem) => item?.productData?.name == name,
+      (item: CartItem) => item?.productData?.name == name
     );
     getProductByID(
       productFound?.productData?.collectionName,
-      productFound?.productID ?? "",
+      productFound?.productID ?? ""
     ).then((product) => {
       updateProductQuantity(
         productFound?.productData?.collectionName,
         productFound?.productID ?? "",
-        (product?.quantity ?? 0) + (productFound?.quantity ?? 0),
+        (product?.quantity ?? 0) + (productFound?.quantity ?? 0)
       );
 
       const updatedCartItems = cartItems.filter(
-        (item: CartItem) => item?.productData?.name !== name,
+        (item: CartItem) => item?.productData?.name !== name
       );
       localStorage.setItem(
         "cartItems",
-        encodeURIComponent(JSON.stringify(updatedCartItems)),
+        encodeURIComponent(JSON.stringify(updatedCartItems))
       );
 
       setCart((prevCart) => {
@@ -227,6 +228,16 @@ export function CartSheet({onOpenChange, ...rest }: DialogProps) {
         <SheetHeader className="mb-4">
           <SheetTitle>Shopping Cart</SheetTitle>
         </SheetHeader>
+        <SheetClose asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-4 top-4"
+            onClick={() => onOpenChange?.(false)}
+          >
+            X
+          </Button>
+        </SheetClose>
         <div className="flex flex-col gap-4 ">
           <div className="grid grid-cols-[auto,auto,auto,auto] gap-4">
             <p className="font-bold text-center">Details</p>

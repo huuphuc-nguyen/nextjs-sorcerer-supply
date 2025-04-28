@@ -7,10 +7,6 @@ import { User } from "lucide-react";
 import { Mail } from "lucide-react";
 import { MapPin } from "lucide-react";
 import { Building2 } from "lucide-react";
-import VisaLogo from "./assets/visa-logo-png-transparent.png";
-import AmexLogo from "./assets/american express_amex_card.png";
-import MasterLogo from "./assets/mastercard_icon.png";
-import DiscoverLogo from "./assets/card_credit_discover_logo.png";
 import CartLogo from "./assets/cart_shopping_icon.png";
 import { useState, useEffect } from "react";
 import { CartItem } from "../productPage/[collectionName]/[id]/page";
@@ -22,7 +18,11 @@ import { createOrderInDatabase } from "@/lib/firebase/order";
 import { updateUserInDatabase } from "@/lib/firebase/users";
 import { getAuth } from "firebase/auth";
 import { getDiscountCodes } from "@/lib/firebase/products";
+import { loadStripe } from '@stripe/stripe-js';
+
 const auth = getAuth();
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const schema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -31,14 +31,6 @@ const schema = z.object({
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State is required"),
   zip: z.string().regex(/^\d{5}$/, "Invalid ZIP code"),
-
-  cardName: z.string().min(1, "Cardholder name is required"),
-  cardNumber: z.string().regex(/^\d{16}$/, "Card number must be 16 digits"),
-  expMonth: z
-    .string()
-    .regex(/^(0[1-9]|1[0-2])$/, "Month must be 2 digits, from 01 to 12"),
-  expYear: z.string().regex(/^\d{4}$/, "Year must be 4 digits"),
-  cvv: z.string().regex(/^\d{3,4}$/, "CVV must be 3 or 4 digits"),
 });
 
 type CardFormSchema = z.infer<typeof schema>;
@@ -48,15 +40,15 @@ const Checkout = () => {
   const [discountAmount, setDiscountAmount] = useState<number>(0);
   const [discountCode, setDiscountCode] = useState<string>("");
   const { toast } = useToast();
-  const [total, setTotal] = useState<number>(0);
+ // const [total, setTotal] = useState<number>(0);
 
   const [discountCodes, setDiscountCodes] = useState<
-  { code: string; amount: number }[]
+    { code: string; amount: number }[]
   >([]);
 
   useEffect(() => {
     (async () => {
-      const all = await getDiscountCodes(); 
+      const all = await getDiscountCodes();
       setDiscountCodes(
         all.map((d) => ({ code: d.code.toUpperCase(), amount: d.amount }))
       );
@@ -99,12 +91,12 @@ const Checkout = () => {
       setCartItems(JSON.parse(decodeURIComponent(storedCartItems)));
       console.log(
         "Cart items loaded from local storage:",
-        JSON.parse(decodeURIComponent(storedCartItems)),
+        JSON.parse(decodeURIComponent(storedCartItems))
       );
     }
   }, []);
 
-  const onSubmit = (data: CardFormSchema) => {
+  const onSubmit = async (data: CardFormSchema) => {
     const currentCart = localStorage.getItem("cartItems");
     const cartItems = currentCart
       ? JSON.parse(decodeURIComponent(currentCart))
@@ -123,11 +115,11 @@ const Checkout = () => {
         sum + (item.productData?.price ?? 0) * (item.quantity ?? 1),
       0
     );
-    
+
     // apply discount first, then tax
     const totalPayment = subtotal * (1 - discountAmount / 100) * 1.0825;
-    
-    setTotal(totalPayment);     
+
+   // setTotal(totalPayment);
     // const totalPayment =
     //   cartItems.reduce(
     //     (total: number, item: CartItem) =>
@@ -143,16 +135,11 @@ const Checkout = () => {
       state: data.state,
       zip: data.zip,
     };
-    createOrderInDatabase(cartItems, totalPayment, shippingDetails);
-    toast({
-      title: "Success",
-      description: "Order created successfully!",
-      variant: "success",
-    });
+    const orderId = await createOrderInDatabase(cartItems, totalPayment, shippingDetails);
 
     const user = auth.currentUser;
     updateUserInDatabase(user?.uid ?? "unknown_user", {
-      payment: `Credit card: ${data.cardNumber.replace(/\d(?=\d{4})/g, "*")}`,
+      payment: `Card with Stripe`,
     });
 
     // Clear cart after order creation
@@ -163,6 +150,27 @@ const Checkout = () => {
       top: 0,
       behavior: "smooth",
     });
+
+    toast({
+      title: "Success",
+      description: "Redirecting to Checkout Page...",
+      variant: "success",
+    });
+
+    // Redirect to Stripe Checkout
+    const stripe = await stripePromise;
+  
+    const response = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+     body: JSON.stringify({total: totalPayment, orderId: orderId}), // 🔥 Pass the priceId here
+    });
+   
+   const session = await response.json();
+  
+    await stripe?.redirectToCheckout({ sessionId: session.id });
   };
 
   return (
@@ -203,25 +211,26 @@ const Checkout = () => {
                     (total, item) =>
                       total +
                       (item.productData?.price ?? 0) * (item.quantity ?? 1),
-                    0,
+                    0
                   )
                   .toFixed(2)}
               </span>
             </p>
             <p className="flex justify-between my-2">
-            Tax 8.25%
-<span>
-  $
-  {(
-    cartItems.reduce(
-      (sum, item) =>
-        sum + (item.productData?.price ?? 0) * (item.quantity ?? 1),
-      0
-    ) *
-      (1 - discountAmount / 100) *   // ⬅ discount %
-      0.0825
-  ).toFixed(2)}
-</span>
+              Tax 8.25%
+              <span>
+                $
+                {(
+                  cartItems.reduce(
+                    (sum, item) =>
+                      sum +
+                      (item.productData?.price ?? 0) * (item.quantity ?? 1),
+                    0
+                  ) *
+                  (1 - discountAmount / 100) * // ⬅ discount %
+                  0.0825
+                ).toFixed(2)}
+              </span>
             </p>
             <p className="flex justify-between my-2">
               Shipping <span>$0</span>
@@ -233,19 +242,21 @@ const Checkout = () => {
             )}
             <hr className="my-2" />
             <p className="flex justify-between font-semibold">
-            Total
-<span>
-  $
-  {(
-    cartItems.reduce(
-      (sum, item) =>
-        sum + (item.productData?.price ?? 0) * (item.quantity ?? 1),
-      0
-    ) *
-      (1 - discountAmount / 100) *   // ⬅ discount %
-      1.0825                         // then tax
-  ).toFixed(2)}
-</span>
+              Total
+              <span>
+                $
+                {(
+                  cartItems.reduce(
+                    (sum, item) =>
+                      sum +
+                      (item.productData?.price ?? 0) * (item.quantity ?? 1),
+                    0
+                  ) *
+                  (1 - discountAmount / 100) * // ⬅ discount %
+                  1.0825
+                ) // then tax
+                  .toFixed(2)}
+              </span>
             </p>
           </div>
         </div>
@@ -363,92 +374,6 @@ const Checkout = () => {
               />
               {errors.zip && (
                 <p className="text-red-500 text-sm">{errors.zip.message}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Card Summary */}
-
-          <h3 className="text-lg font-semibold">Payment</h3>
-          <label>Accepted Cards</label>
-          <div className="flex gap-2 mb-2">
-            <Image
-              src={VisaLogo}
-              alt="visa logo"
-              className="w-[52px] h-[22px]"
-            />
-            <Image
-              src={AmexLogo}
-              alt="amex logo"
-              className="w-[42px] h-[22px]"
-            />
-            <Image
-              src={MasterLogo}
-              alt="mastercard logo"
-              className="w-[42px] h-[22px]"
-            />
-            <Image
-              src={DiscoverLogo}
-              alt="discover logo"
-              className="w-[42px] h-[22px]"
-            />
-          </div>
-          <div>
-            <label>Name on Card</label>
-            <input
-              {...register("cardName")}
-              className="w-full p-2 border rounded mt-1"
-              placeholder="John Doe"
-            />
-            {errors.cardName && (
-              <p className="text-red-500 text-sm">{errors.cardName.message}</p>
-            )}
-          </div>
-          <div>
-            <label>Credit Card Number</label>
-            <input
-              {...register("cardNumber")}
-              className="w-full p-2 border rounded mt-1"
-              placeholder="1111222233334444"
-            />
-            {errors.cardNumber && (
-              <p className="text-red-500 text-sm">
-                {errors.cardNumber.message}
-              </p>
-            )}
-          </div>
-          <div>
-            <label>Exp Month</label>
-            <input
-              {...register("expMonth")}
-              className="w-full p-2 border rounded mt-1"
-              placeholder="September"
-            />
-            {errors.expMonth && (
-              <p className="text-red-500 text-sm">{errors.expMonth.message}</p>
-            )}
-          </div>
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <label>Exp Year</label>
-              <input
-                {...register("expYear")}
-                className="w-full p-2 border rounded mt-1"
-                placeholder="2028"
-              />
-              {errors.expYear && (
-                <p className="text-red-500 text-sm">{errors.expYear.message}</p>
-              )}
-            </div>
-            <div className="flex-1">
-              <label>CVV</label>
-              <input
-                {...register("cvv")}
-                className="w-full p-2 border rounded mt-1"
-                placeholder="352"
-              />
-              {errors.cvv && (
-                <p className="text-red-500 text-sm">{errors.cvv.message}</p>
               )}
             </div>
           </div>
