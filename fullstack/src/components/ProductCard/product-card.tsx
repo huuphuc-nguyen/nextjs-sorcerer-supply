@@ -6,6 +6,7 @@ interface ProductCardProps {
   name?: string;
   price?: number;
   imageSrc?: string;
+  quantity?: number;
 }
 
 const isValidImageUrl = (url: string) =>
@@ -17,6 +18,7 @@ export function ProductCard({
   name = "Mystic Artifact",
   price = 0.0,
   imageSrc = "/next.svg",
+  quantity,
 }: ProductCardProps) {
   return (
     <Card className="md:w-52 w-36 bg-zinc-900 border border-zinc-700 hover:border-indigo-500 shadow-md hover:shadow-indigo-500/40 group cursor-pointer transition-all duration-300 rounded-xl overflow-hidden">
@@ -35,7 +37,10 @@ export function ProductCard({
         <p className="text-sm md:text-base font-semibold text-white truncate w-full">
           {name}
         </p>
-        <p className="text-sm text-emerald-300">${price}</p>
+        <div className="flex items-center justify-between w-full">
+          <p className="text-sm text-emerald-300">${price}</p>
+          { (quantity === 0 ? (<p  className="text-sm text-red-500">Out of stock</p>) : (<p className="text-sm text-emerald-300">{quantity} Left</p>))}
+        </div>
       </CardFooter>
     </Card>
   );

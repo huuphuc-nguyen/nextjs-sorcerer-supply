@@ -92,6 +92,7 @@ export default function Home() {
                     name={product.name}
                     price={product.price}
                     imageSrc={product.imageSrc}
+                    quantity={product.quantity}
                   />
                 </CarouselItem>
               ))}

@@ -32,6 +32,7 @@ type Product = {
   id?: string;
   imageSrc?: string;
   collectionName?: string;
+  quantity?: number;
 };
 
 export default function SellerDashboard() {
@@ -142,12 +143,14 @@ export default function SellerDashboard() {
                 name: string;
                 price: number;
                 imageSrc?: string;
+                quantity?: number;
               }) => ({
                 id: p.id,
                 name: p.name,
                 price: p.price,
                 imageSrc: p.imageSrc,
                 collectionName: cat,
+                quantity: p.quantity,
               }),
             ),
           );
@@ -242,6 +245,7 @@ export default function SellerDashboard() {
                 name={p.name}
                 price={p.price}
                 imageSrc={p.imageSrc}
+                quantity={p.quantity}
               />
             </div>
           ))}

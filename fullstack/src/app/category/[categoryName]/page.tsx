@@ -136,7 +136,7 @@ const CategoryPage = () => {
             onClick={() => router.push(`/productPage/${p.collectionName}/${p.id}`)}
             className="cursor-pointer"
           >
-            <ProductCard name={p.name} price={p.price} imageSrc={p.imageSrc} />
+            <ProductCard name={p.name} price={p.price} imageSrc={p.imageSrc} quantity={p.quantity}/>
           </div>
         ))}
       </div>
