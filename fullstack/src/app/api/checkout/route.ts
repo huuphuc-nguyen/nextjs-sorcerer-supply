@@ -1,9 +1,10 @@
 import Stripe from 'stripe';
 import { NextRequest, NextResponse } from 'next/server';
 
-const stripe = new Stripe(process.env.NEXT_STRIPE_SECRET_KEY);
 
 export async function POST(req: NextRequest) {
+const stripe = new Stripe(process.env.NEXT_STRIPE_SECRET_KEY);
+  
     try {
       const body = await req.json(); // ✅ Read body in App Router
       const  total = body.total; // ✅ Use the body
