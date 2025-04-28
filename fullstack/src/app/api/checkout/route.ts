@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 import { NextRequest, NextResponse } from 'next/server';
 
 if (!process.env.NEXT_STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not defined in the environment variables');
+  throw new Error('NEXT_STRIPE_SECRET_KEY is not defined in the environment variables');
 }
 const stripe = new Stripe(process.env.NEXT_STRIPE_SECRET_KEY);
 
