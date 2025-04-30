@@ -22,7 +22,7 @@ import { loadStripe } from '@stripe/stripe-js';
 
 const auth = getAuth();
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripePromise = loadStripe("pk_test_51REYlD041wjY4F1hqBU6iaU26K8YpKqg76RNQp5LnRKpJxnD3OqNscCpPfa56g3mqXIbFyR0PyJLTJW32l5t3RGy00vtwnqpvf");
 
 const schema = z.object({
   fullName: z.string().min(1, "Full name is required"),
