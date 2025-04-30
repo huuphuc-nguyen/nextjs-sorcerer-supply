@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 
 export async function POST(req: NextRequest) {
+  console.log("POST request received in /api/checkout route");
 const stripe = new Stripe(process.env.NEXT_STRIPE_SECRET_KEY);
   
     try {
