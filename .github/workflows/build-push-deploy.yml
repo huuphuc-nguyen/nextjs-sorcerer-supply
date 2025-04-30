@@ -71,5 +71,8 @@ jobs:
             docker stop sorcerer_app || true
             docker rm sorcerer_app || true
 
-            echo "Running new container..."
-            docker run -d --name sorcerer_app -p 3000:3000 ghcr.io/${{ github.repository }}:latest
+            docker run -d \
+            --name sorcerer_app \
+            -p 3000:3000 \
+            -e NEXT_STRIPE_SECRET_KEY=${{ secrets.NEXT_STRIPE_SECRET_KEY }} \
+            ghcr.io/${{ github.repository }}:latest
