@@ -19,6 +19,7 @@ env:
   NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
   NEXT_STRIPE_SECRET_KEY: ${{ secrets.NEXT_STRIPE_SECRET_KEY }}
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+  SHA: ${{ github.sha }}
 
 jobs:
   build-and-push:
@@ -48,7 +49,7 @@ jobs:
             --build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY \
             -t $REGISTRY/$IMAGE_NAME:latest fullstack/
       - name: Push Docker Image
-        run: docker push $REGISTRY/$IMAGE_NAME:latest
+        run: docker push $REGISTRY/$IMAGE_NAME:$SHA
   deploy-to-vps:
     runs-on: ubuntu-latest
     needs: build-and-push  # Ensures the build finishes before deploying
@@ -60,19 +61,15 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          proxy_port: ${{ secrets.VPS_PORT }}
           script: |
             echo "Logging into GitHub Container Registry..."
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
-            
-            echo "Pulling latest Docker image..."
-            docker pull ghcr.io/${{ github.repository }}:latest
 
-            echo "Stopping and removing old container..."
-            docker stop sorcerer_app || true
-            docker rm sorcerer_app || true
-
-            docker run -d \
-            --name sorcerer_app \
-            -p 3000:3000 \
-            -e NEXT_STRIPE_SECRET_KEY=${{ secrets.NEXT_STRIPE_SECRET_KEY }} \
-            ghcr.io/${{ github.repository }}:latest
+            cd ~/projects/my-projects
+            SHA=${{ github.sha }}
+            STRIPE=${{ secrets.NEXT_STRIPE_SECRET_KEY }}
+            sed -i "s|\(ghcr.io/huuphuc-nguyen/nextjs-sorcerer-supply:\)[^[:space:]]\+|\1$SHA|" my-projects-stack.yml
+            sed -i "s|^\(\s*-\s*NEXT_STRIPE_SECRET_KEY=\).*|\1$STRIPE_SECRET|" my-projects-stack.yml
+            docker stack deploy --with-registry-auth -c my-projects-stack.yml my-projects
