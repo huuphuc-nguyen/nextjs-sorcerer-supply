@@ -47,7 +47,7 @@ jobs:
             --build-arg NEXT_PUBLIC_FIREBASE_APP_ID=$NEXT_PUBLIC_FIREBASE_APP_ID \
             --build-arg NEXT_STRIPE_SECRET_KEY=$NEXT_STRIPE_SECRET_KEY \
             --build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY \
-            -t $REGISTRY/$IMAGE_NAME:latest fullstack/
+            -t $REGISTRY/$IMAGE_NAME:$SHA fullstack/
       - name: Push Docker Image
         run: docker push $REGISTRY/$IMAGE_NAME:$SHA
   deploy-to-vps:
