@@ -71,5 +71,4 @@ jobs:
             SHA=${{ github.sha }}
             STRIPE=${{ secrets.NEXT_STRIPE_SECRET_KEY }}
             sed -i "s|\(ghcr.io/huuphuc-nguyen/nextjs-sorcerer-supply:\)[^[:space:]]\+|\1$SHA|" my-projects-stack.yml
-            sed -i "s|^\(\s*-\s*NEXT_STRIPE_SECRET_KEY=\).*|\1$STRIPE_SECRET|" my-projects-stack.yml
             docker stack deploy --with-registry-auth -c my-projects-stack.yml my-projects
